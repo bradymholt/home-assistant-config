@@ -1,0 +1,215 @@
+default_config:
+
+# Steps to reduce Write Cycles and extend SD/SSD life expectancy
+# https://community.home-assistant.io/t/steps-to-reduce-write-cycles-and-extend-sd-ssd-life-expectancy/291718
+logger:
+  default: critical
+  logs:
+    # log level for HA core
+    homeassistant.core: fatal
+recorder:
+  # We are using memory for the SQLite database so on a reboot everything is lost
+  db_url: "sqlite:///:memory:"
+  commit_interval: 30
+  purge_keep_days: 7
+# exclude:
+#   event_types:
+#     - service_removed
+#     - service_executed
+#     - platform_discovered
+#     - homeassistant_start
+#     - homeassistant_stop
+#     - feedreader
+#     - service_registered
+#     - call_service
+#     - component_loaded
+#     - logbook_entry
+#     - system_log_event
+#     - automation_triggered
+#     - script_started
+#     - timer_out_of_sync
+
+homeassistant:
+  name: Home
+  latitude: !secret latitude
+  longitude: !secret longitude
+  elevation: 6500
+  unit_system: imperial
+  time_zone: America/Denver
+  external_url: !secret external_url
+  packages: !include_dir_named packages
+
+http:
+  ssl_certificate: /ssl/fullchain.pem
+  ssl_key: /ssl/privkey.pem
+
+panel_custom:
+  - name: ha_server_con
+    sidebar_title: Server Controls
+    sidebar_icon: mdi:cog-transfer
+    js_url: /api/hassio/app/entrypoint.js
+    url_path: "config/server_control"
+    embed_iframe: true
+    require_admin: true
+    config:
+      ingress: core_configurator
+  - name: ha_automations
+    sidebar_title: Automations
+    sidebar_icon: mdi:robot
+    js_url: /api/hassio/app/entrypoint.js
+    url_path: "config/automation/dashboard"
+    embed_iframe: true
+    require_admin: true
+    config:
+      ingress: core_configurator
+  - name: ha_scripts
+    sidebar_title: Scripts
+    sidebar_icon: mdi:script-text-play
+    js_url: /api/hassio/app/entrypoint.js
+    url_path: "config/script/dashboard"
+    embed_iframe: true
+    require_admin: true
+    config:
+      ingress: core_configurator
+  - name: ha_integ
+    sidebar_title: Integrations
+    sidebar_icon: mdi:checkerboard
+    js_url: /api/hassio/app/entrypoint.js
+    url_path: "config/integrations"
+    embed_iframe: true
+    require_admin: true
+    config:
+      ingress: core_configurator
+
+ifttt:
+  key: !secret ifttt_key
+
+tts:
+  - platform: google_translate
+    cache: true
+    cache_dir: /tmp/tts
+    time_memory: 300
+    base_url: !secret external_url
+    service_name: google_say
+
+# Assistant Relay
+rest_command:
+  assistant_broadcast:
+    url: http://192.168.1.28:3000/assistant
+    method: POST
+    content_type: "application/json"
+    payload: '{"command":"{{ command }}", "user":"brady", "broadcast":true}'
+  assistant_relay:
+    url: http://192.168.1.28:3000/assistant
+    method: POST
+    content_type: "application/json"
+    payload: '{"command":"{{ command }}", "user":"brady"}'
+
+spotify:
+  client_id: !secret spotify_client_id
+  client_secret: !secret spotify_client_secret
+
+spotcast:
+  sp_dc: !secret spotcast_sp_dc
+  sp_key: !secret spotcast_sp_key
+
+nest:
+  client_id: !secret nest_client_id
+  client_secret: !secret nest_client_secret
+  # "Project ID" in the Device Access Console
+  project_id: !secret nest_project_id
+  # Provide the full path exactly as shown under "Subscription name" in Google Cloud Console
+  subscriber_id: projects/home-assistant-86f18/subscriptions/home_assistant_sdm
+
+google_assistant:
+  project_id: home-assistant-86f18
+  service_account: !include SERVICE_ACCOUNT.JSON
+  # report_state: true # Disabled to try and prevent failed syncs after command
+  report_state: false
+  exposed_domains:
+    - switch
+    - light
+    - input_boolean
+    - scene
+    - sensor
+    - climate
+  entity_config:
+    #climate.main_thermostat:
+    #  expose: false
+    sensor.main_thermostat_humidity:
+      expose: false
+    sensor.main_thermostat_temperature:
+      expose: false
+    #climate.basement_thermostat:
+    #  expose: false
+    sensor.basement_thermostat_humidity:
+      expose: false
+    sensor.basement_thermostat_temperature:
+      expose: false
+    sensor.universal_electronics_inc_urc4460bc0_x_r_temperature:
+      expose: false
+    sensor.brady_pixel_3_battery_temperature:
+      expose: false
+    sensor.katie_pixel_3_battery_temperature:
+      expose: false
+
+switch:
+  - platform: template
+    switches:
+      alarm_armed_away:
+        friendly_name: Alarm Armed Away
+        value_template: "{{ is_state('alarm_control_panel.lyricaiod74830', 'armed_away') }}"
+        turn_on:
+          service: alarm_control_panel.alarm_arm_away
+          data:
+            entity_id: alarm_control_panel.lyricaiod74830
+        turn_off:
+          service: alarm_control_panel.alarm_disarm
+          data:
+            entity_id: alarm_control_panel.lyricaiod74830
+      tv_switch:
+        friendly_name: TV Switch
+        value_template: "{{ is_state('media_player.tv', 'on') }}"
+        turn_on:
+          service: media_player.turn_on
+          data:
+            entity_id: media_player.tv
+        turn_off:
+          service: media_player.turn_off
+          data:
+            entity_id: media_player.tv
+      tv_mute_switch:
+        friendly_name: TV Mute Switch
+        value_template: "{{ states.media_player.tv.attributes.is_volume_muted }}"
+        turn_on:
+          service: media_player.volume_mute
+          data:
+            entity_id: media_player.tv
+            is_volume_muted: true
+        turn_off:
+          service: media_player.volume_mute
+          data:
+            entity_id: media_player.tv
+            is_volume_muted: false
+      roku_pause_switch:
+        friendly_name: Roku Pause Switch
+        value_template: "{{ is_state('media_player.roku_ultra', 'paused') }}"
+        turn_on:
+          service: media_player.media_pause
+          data:
+            device_id: d8b259214bd2acefdc70dae49649ef45
+        turn_off:
+          service: media_player.media_play
+          data:
+            device_id: d8b259214bd2acefdc70dae49649ef45
+group:
+  presence_home:
+    name: Presence Home
+    entities:
+      - person.brady
+      - person.katie
+
+automation: !include automations.yaml
+script: !include scripts.yaml
+scene: !include scenes.yaml
+# group: !include groups.yaml

@@ -1,0 +1,121 @@
+set_thermostats_home:
+  alias: Set Thermostats Home
+  sequence:
+  - device_id: 63d3bbd0a41e453a8732a7119093e631
+    domain: climate
+    entity_id: climate.main_thermostat
+    type: set_preset_mode
+    preset_mode: Home
+  - device_id: 112c271f3e3cbc53f7fe37108abe7be3
+    domain: climate
+    entity_id: climate.basement_thermostat
+    type: set_preset_mode
+    preset_mode: Home
+  mode: single
+set_thermostats_away:
+  alias: Set Thermostats Away
+  sequence:
+  - device_id: 63d3bbd0a41e453a8732a7119093e631
+    domain: climate
+    entity_id: climate.main_thermostat
+    type: set_preset_mode
+    preset_mode: Away
+  - device_id: 112c271f3e3cbc53f7fe37108abe7be3
+    domain: climate
+    entity_id: climate.basement_thermostat
+    type: set_preset_mode
+    preset_mode: Away
+  mode: single
+snapshot_backup:
+  alias: Snapshot Backup
+  sequence:
+  - service: hassio.addon_stdin
+    data:
+      addon: 15d21743_samba_backup
+      input: trigger
+  mode: single
+reset_media_volume:
+  alias: Reset Media Volume
+  sequence:
+  - service: media_player.volume_set
+    data:
+      volume_level: 0.6
+    target:
+      entity_id: media_player.hub
+  - service: media_player.volume_set
+    data:
+      volume_level: 0.5
+    target:
+      entity_id:
+      - media_player.office
+      - media_player.basement_speaker
+      - media_player.austin_s_room
+      - media_player.kayla_s_room
+      - media_player.master_bedroom
+  mode: single
+play_spotify:
+  alias: Play Spotify on Latest Player
+  sequence:
+  - service: media_player.play_media
+    target:
+      entity_id: media_player.spotify_bradyholt1980
+    data:
+      media_content_id: https://open.spotify.com/playlist/37i9dQZF1EF52nktqh71YJ
+      media_content_type: playlist
+  mode: single
+broadcast:
+  alias: Google Assistant Broadcast
+  sequence:
+  - service: rest_command.assistant_broadcast
+    data:
+      command: hello there
+  mode: single
+vaccum_kitchen:
+  alias: Vaccum Kitchen
+  sequence:
+  - service: ifttt.trigger
+    data:
+      event: vacuum_kitchen
+  mode: single
+set_thermostats_sleep:
+  alias: Set Thermostats Sleep
+  sequence:
+  - device_id: 63d3bbd0a41e453a8732a7119093e631
+    domain: climate
+    entity_id: climate.main_thermostat
+    type: set_preset_mode
+    preset_mode: Sleep
+  - device_id: 112c271f3e3cbc53f7fe37108abe7be3
+    domain: climate
+    entity_id: climate.basement_thermostat
+    type: set_preset_mode
+    preset_mode: Sleep
+  mode: single
+play_spotify_in_office:
+  sequence:
+  - service: spotcast.start
+    data:
+      entity_id: media_player.kids
+      uri: spotify:playlist:1Ci88PYWYA5dDC173KnaF4
+      start_volume: 50
+  mode: single
+  alias: Play Christi Knockels on Spotify in Kids Room
+demo_google_assistant_sync_devices:
+  alias: Sync Google Assistant Devices
+  sequence:
+  - service: rest_command.assistant_relay
+    data:
+      command: sync my devices
+  mode: single
+test:
+  alias: Test
+  variables:
+    notification_message: "Alarm was triggered on: {% for state in states.binary_sensor\
+      \ -%}\n  {% if state.state == 'off' and state.name not in ['Updater','Rachio','And\
+      \ ignore this one'] %}\n    {{ state.name }}\n  {%- endif -%}\n{%- endfor -%}\n"
+  sequence:
+  - service: notify.mobile_app_brady_pixel_3
+    data:
+      message: '{{notification_message}}'
+      title: Test Title
+  mode: single

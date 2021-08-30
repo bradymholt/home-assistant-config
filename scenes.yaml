@@ -1,0 +1,126 @@
+- id: '1620601408423'
+  name: Everything Off
+  entities:
+    switch.multirelay:
+      friendly_name: Fireplace
+      icon: mdi:fireplace
+      state: 'off'
+    light.in_wall_smart_dimmer_3:
+      supported_color_modes:
+      - brightness
+      friendly_name: Basement Light
+      icon: mdi:movie-open
+      supported_features: 32
+      state: 'off'
+    light.in_wall_smart_dimmer_2:
+      supported_color_modes:
+      - brightness
+      friendly_name: Basement Side Light
+      icon: mdi:controller-classic
+      supported_features: 32
+      state: 'off'
+    light.in_wall_smart_dimmer:
+      supported_color_modes:
+      - brightness
+      friendly_name: Dining Room Light
+      icon: mdi:food-turkey
+      supported_features: 32
+      state: 'off'
+    switch.switch_7:
+      friendly_name: Garage Light
+      icon: hass:lightbulb
+      state: 'off'
+    switch.lamp_on_off:
+      friendly_name: Lamp
+      icon: mdi:floor-lamp
+      state: 'off'
+    switch.tv_switch:
+      friendly_name: TV Switch
+      state: 'off'
+    switch.in_wall_smart_switch_3:
+      friendly_name: Living Room Overhead
+      icon: hass:fan
+      state: 'off'
+    switch.in_wall_smart_switch_2:
+      friendly_name: Mantle Light
+      icon: mdi:image
+      state: 'off'
+    light.in_wall_smart_dimmer_5:
+      supported_color_modes:
+      - brightness
+      friendly_name: Nook Light
+      icon: mdi:food
+      supported_features: 32
+      state: 'off'
+    light.in_wall_smart_dimmer_4:
+      supported_color_modes:
+      - brightness
+      friendly_name: Kitchen Overhead Light
+      icon: mdi:fridge
+      supported_features: 32
+      state: 'off'
+- id: '1630269454705'
+  name: Dinner
+  entities:
+    switch.in_wall_smart_switch_3:
+      friendly_name: Living Room Overhead Light
+      icon: hass:fan
+      state: 'off'
+    light.in_wall_smart_dimmer_5:
+      supported_color_modes:
+      - brightness
+      color_mode: brightness
+      brightness: 255
+      friendly_name: Nook Light
+      icon: mdi:food
+      supported_features: 32
+      state: 'on'
+    light.in_wall_smart_dimmer_4:
+      supported_color_modes:
+      - brightness
+      friendly_name: Kitchen Overhead Light
+      icon: mdi:fridge
+      supported_features: 32
+      state: 'off'
+    switch.tv_switch:
+      friendly_name: TV Switch
+      state: 'off'
+    switch.in_wall_smart_switch_2:
+      friendly_name: Mantle Light
+      icon: mdi:image
+      state: 'off'
+    switch.lamp_on_off:
+      friendly_name: Lamp
+      icon: mdi:floor-lamp
+      state: 'off'
+  icon: mdi:food-turkey
+- id: '1630287668483'
+  name: Watching TV
+  entities:
+    light.in_wall_smart_dimmer_4:
+      supported_color_modes:
+      - brightness
+      friendly_name: Kitchen Overhead Light
+      icon: mdi:fridge
+      supported_features: 32
+      state: 'off'
+    light.in_wall_smart_dimmer_5:
+      supported_color_modes:
+      - brightness
+      friendly_name: Nook Light
+      icon: mdi:food
+      supported_features: 32
+      state: 'off'
+    switch.in_wall_smart_switch_3:
+      friendly_name: Living Room Overhead Light
+      icon: hass:fan
+      state: 'off'
+    switch.lamp_on_off:
+      friendly_name: Lamp
+      icon: mdi:floor-lamp
+      state: 'off'
+    switch.in_wall_smart_switch_2:
+      friendly_name: Mantle Light
+      icon: mdi:image
+      state: 'on'
+  icon: mdi:television
