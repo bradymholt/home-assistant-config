@@ -12,22 +12,6 @@ recorder:
   db_url: "sqlite:///:memory:"
   commit_interval: 30
   purge_keep_days: 7
-# exclude:
-#   event_types:
-#     - service_removed
-#     - service_executed
-#     - platform_discovered
-#     - homeassistant_start
-#     - homeassistant_stop
-#     - feedreader
-#     - service_registered
-#     - call_service
-#     - component_loaded
-#     - logbook_entry
-#     - system_log_event
-#     - automation_triggered
-#     - script_started
-#     - timer_out_of_sync
 
 homeassistant:
   name: Home
@@ -71,6 +55,15 @@ panel_custom:
     require_admin: true
     config:
       ingress: core_configurator
+  - name: ha_scenes
+    sidebar_title: Scenes
+    sidebar_icon: mdi:palette
+    js_url: /api/hassio/app/entrypoint.js
+    url_path: "config/scene/dashboard"
+    embed_iframe: true
+    require_admin: true
+    config:
+      ingress: core_configurator    
   - name: ha_integ
     sidebar_title: Integrations
     sidebar_icon: mdi:checkerboard
@@ -124,8 +117,7 @@ nest:
 google_assistant:
   project_id: home-assistant-86f18
   service_account: !include SERVICE_ACCOUNT.JSON
-  # report_state: true # Disabled to try and prevent failed syncs after command
-  report_state: false
+  report_state: true
   exposed_domains:
     - switch
     - light
@@ -134,14 +126,13 @@ google_assistant:
     - sensor
     - climate
   entity_config:
-    #climate.main_thermostat:
-    #  expose: false
+    # Scenes must be assigned to a room to be available to other secondary users
+    scene.dinner:
+      room: Kitchen
     sensor.main_thermostat_humidity:
       expose: false
     sensor.main_thermostat_temperature:
       expose: false
-    #climate.basement_thermostat:
-    #  expose: false
     sensor.basement_thermostat_humidity:
       expose: false
     sensor.basement_thermostat_temperature:
@@ -152,7 +143,7 @@ google_assistant:
       expose: false
     sensor.katie_pixel_3_battery_temperature:
       expose: false
-
+    
 switch:
   - platform: template
     switches:

@@ -90,7 +90,11 @@
   - service: tts.google_say
     data:
       entity_id: media_player.hub
-      message: Welcome Home!
+      message: '{{ ["Welcome home!", "Hey there!", "I missed you.", "Welcome back
+        home."] | random }} It''s{%- if now().hour >= 12 -%} {{ "" }} {{ now().hour
+        - 12 }}{% else %}{{ now().hour }}{% endif %}:{{ now().minute }}
+
+        '
   - condition: sun
     after: sunset
   - type: turn_on
@@ -486,22 +490,6 @@
     entity_id: light.in_wall_smart_dimmer_2
     domain: light
   mode: single
-- id: '1630199738321'
-  alias: Control Lamp with Mantle Light
-  description: ''
-  trigger:
-  - platform: device
-    type: turned_off
-    device_id: 97ba41cc94f8d9a4f0f9c9c4c33617db
-    entity_id: switch.in_wall_smart_switch_2
-    domain: switch
-  condition: []
-  action:
-  - type: toggle
-    device_id: 11a53d50efc39b2800c8bfae061b90d7
-    entity_id: switch.lamp_on_off
-    domain: switch
-  mode: restart
 - id: '1630287711798'
   alias: Watching TV at Night
   description: ''
