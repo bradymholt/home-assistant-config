@@ -16,7 +16,7 @@
       supported_color_modes:
       - brightness
       friendly_name: Basement Side Light
-      icon: mdi:controller-classic
+      icon: mdi:hockey-puck
       supported_features: 32
       state: 'off'
     light.in_wall_smart_dimmer:
@@ -34,11 +34,8 @@
       friendly_name: Lamp
       icon: mdi:floor-lamp
       state: 'off'
-    switch.tv_switch:
-      friendly_name: TV Switch
-      state: 'off'
     switch.in_wall_smart_switch_3:
-      friendly_name: Living Room Overhead
+      friendly_name: Living Room Overhead Light
       icon: hass:fan
       state: 'off'
     switch.in_wall_smart_switch_2:
@@ -58,6 +55,9 @@
       friendly_name: Kitchen Overhead Light
       icon: mdi:fridge
       supported_features: 32
+      state: 'off'
+    switch.tv:
+      friendly_name: TV
       state: 'off'
 - id: '1630269454705'
   name: Dinner
@@ -82,9 +82,6 @@
       icon: mdi:fridge
       supported_features: 32
       state: 'off'
-    switch.tv_switch:
-      friendly_name: TV Switch
-      state: 'off'
     switch.in_wall_smart_switch_2:
       friendly_name: Mantle Light
       icon: mdi:image
@@ -92,6 +89,9 @@
     switch.lamp_on_off:
       friendly_name: Lamp
       icon: mdi:floor-lamp
+      state: 'off'
+    switch.tv:
+      friendly_name: TV
       state: 'off'
   icon: mdi:food-turkey
 - id: '1630287668483'
@@ -124,3 +124,23 @@
       icon: mdi:image
       state: 'on'
   icon: mdi:television
+- id: '1630384475620'
+  name: Kids Bedtime
+  entities:
+    light.in_wall_smart_dimmer_3:
+      supported_color_modes:
+      - brightness
+      color_mode: brightness
+      brightness: 64
+      friendly_name: Basement Light
+      icon: mdi:movie-open
+      supported_features: 32
+      state: 'on'
+    light.in_wall_smart_dimmer_2:
+      supported_color_modes:
+      - brightness
+      friendly_name: Basement Side Light
+      icon: mdi:hockey-puck
+      supported_features: 32
+      state: 'off'
+  icon: mdi:human-female-boy

@@ -19,7 +19,7 @@
     entity_id: climate.basement_thermostat
     type: set_preset_mode
     preset_mode: Sleep
-  - scene: scene.after_kids_bedtime
+  - scene: scene.watching_tv
   mode: single
 - id: '1620249701339'
   alias: Bedtime
@@ -91,7 +91,7 @@
     data:
       entity_id: media_player.hub
       message: '{{ ["Welcome home!", "Hey there!", "I missed you.", "Welcome back
-        home."] | random }} It''s{%- if now().hour >= 12 -%} {{ "" }} {{ now().hour
+        home."] | random }} It''s{%- if now().hour >= 13 -%} {{ "" }} {{ now().hour
         - 12 }}{% else %}{{ now().hour }}{% endif %}:{{ now().minute }}
 
         '
@@ -303,15 +303,7 @@
     domain: switch
   condition: []
   action:
-  - type: turn_on
-    device_id: 64f8098a908852b391404adf666dd554
-    entity_id: light.in_wall_smart_dimmer_3
-    domain: light
-    brightness_pct: 25
-  - type: turn_off
-    device_id: 24ac4d037a2409175364f29aeadb73f3
-    entity_id: light.in_wall_smart_dimmer_2
-    domain: light
+  - scene: scene.kids_bedtime
   mode: single
 - id: '1621002215197'
   alias: Turn on Side Yard Light
@@ -490,15 +482,15 @@
     entity_id: light.in_wall_smart_dimmer_2
     domain: light
   mode: single
-- id: '1630287711798'
+- id: '1630678474698'
   alias: Watching TV at Night
   description: ''
   trigger:
   - platform: device
-    device_id: 22e9badac3739c3c93c877d1cc3daba2
-    domain: media_player
-    entity_id: media_player.tv
     type: turned_on
+    device_id: f79459e1d13004b79e0d8a5124b10cb3
+    entity_id: switch.tv
+    domain: switch
   condition:
   - condition: sun
     after: sunset

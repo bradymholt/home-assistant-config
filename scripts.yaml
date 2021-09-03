@@ -68,7 +68,11 @@ broadcast:
   sequence:
   - service: rest_command.assistant_broadcast
     data:
-      command: hello there
+      command: '{{ ["Welcome home!", "Hey there!", "I missed you.", "Welcome back
+        home."] | random }} It''s{%- if now().hour >= 13 -%} {{ "" }} {{ now().hour
+        - 12 }}{% else %}{{ now().hour }}{% endif %}:{{ now().minute }}
+
+        '
   mode: single
 vaccum_kitchen:
   alias: Vaccum Kitchen
