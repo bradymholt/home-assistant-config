@@ -60,7 +60,7 @@
     entity_id: alarm_control_panel.lyricaiod74830
     type: arm_away
     code: ''
-  - scene: scene.everything_off
+  - scene: scene.all_lights_off
   mode: single
 - id: '1620249986759'
   alias: Back Home
@@ -71,7 +71,7 @@
     to: home
   condition:
   - condition: time
-    before: '20:30:00'
+    before: '22:30:00'
   action:
   - service: script.turn_on
     target:
@@ -125,12 +125,14 @@
   condition: []
   action:
   - type: turn_off
-    device_id: f296997e49560ac578a2366f06194b5a
-    entity_id: switch.switch_5
+    device_id: 946a86ade4e3571c3826df4cfb0a3878
+    entity_id: switch.in_wall_smart_switch_4
     domain: switch
-  - condition: state
+  - type: is_open
+    condition: device
+    device_id: c76bb7991c083368faaa72d93037def9
     entity_id: binary_sensor.universal_electronics_inc_urc4460bc0_x_r_ias_zone
-    state: 'on'
+    domain: binary_sensor
   - type: turn_on
     device_id: 2243cca92f82d0cebbea6e0dd7e7af02
     entity_id: switch.isolated_contact_fixture_module
@@ -148,8 +150,8 @@
   condition: []
   action:
   - type: turn_on
-    device_id: f296997e49560ac578a2366f06194b5a
-    entity_id: switch.switch_5
+    device_id: 946a86ade4e3571c3826df4cfb0a3878
+    entity_id: switch.in_wall_smart_switch_4
     domain: switch
   mode: single
 - id: '1620326722339'
@@ -190,7 +192,7 @@
   mode: single
 - id: '1620835622206'
   alias: Alarm Triggered
-  description: Test 123
+  description: ''
   trigger:
   - platform: device
     device_id: 5de0014dbd651a0ab324fb0169a472d8
@@ -199,25 +201,17 @@
     type: triggered
   condition: []
   action:
-  - service: notify.mobile_app_brady_pixel_3
+  - service: notify.all_phones
     data:
       title: '*ALARM TRIGGERED!*'
-      message: '{{notification_message}}'
-  - service: notify.mobile_app_katie_pixel_3
-    data:
-      title: '*ALARM TRIGGERED!*'
-      message: '{{notification_message}}'
+      message: "Alarm was triggered on: {% for state in states.binary_sensor -%}\n\
+        \  {% if state.state == 'on' and state.name not in ['Updater','Rachio','And\
+        \ ignore this one'] %}\n    {{ state.name }}\n  {%- endif -%}\n{%- endfor\
+        \ -%}  \n"
+  - scene: scene.alarm_triggered
   - type: turn_on
     device_id: 2243cca92f82d0cebbea6e0dd7e7af02
     entity_id: switch.isolated_contact_fixture_module
-    domain: switch
-  - type: turn_on
-    device_id: 8316af31027617d895cd2671d7152675
-    entity_id: switch.switch_2
-    domain: switch
-  - type: turn_on
-    device_id: df626cc1bd7df528205115d27aabc4e1
-    entity_id: switch.switch
     domain: switch
   - service: media_player.volume_set
     target:
@@ -229,8 +223,13 @@
       sequence:
       - service: tts.google_say
         data:
-          entity_id: media_player.hub
           message: Exit the house immediately!  The police have been called.
+          entity_id: media_player.hub
+      - delay:
+          hours: 0
+          minutes: 0
+          seconds: 7
+          milliseconds: 0
   mode: single
   variables:
     notification_message: "Alarm was triggered on: {% for state in states.binary_sensor\
@@ -306,7 +305,7 @@
   - scene: scene.kids_bedtime
   mode: single
 - id: '1621002215197'
-  alias: Turn on Side Yard Light
+  alias: Side Yard Light
   description: ''
   trigger:
   - type: opened
@@ -378,18 +377,9 @@
     device_id: 993e1a73a50a3a2241eac07922e915fd
     entity_id: switch.switch_7
     domain: switch
-  - delay:
-      hours: 0
-      minutes: 5
-      seconds: 0
-      milliseconds: 0
-  - type: turn_off
-    device_id: 993e1a73a50a3a2241eac07922e915fd
-    entity_id: switch.switch_7
-    domain: switch
   mode: restart
 - id: '1624931488173'
-  alias: Notify Garage Door Left Open
+  alias: Garage Door Left Open
   description: ''
   trigger:
   - type: opened
@@ -404,16 +394,9 @@
       milliseconds: 0
   condition: []
   action:
-  - service: notify.mobile_app_brady_pixel_3
+  - service: notify.all_phones
     data:
-      message: '{{notification_message}}'
-      data:
-        actions:
-        - action: close
-          title: Close
-  - service: notify.mobile_app_katie_pixel_3
-    data:
-      message: '{{notification_message}}'
+      message: The garage door has been open for 1 hour.
       data:
         actions:
         - action: close
@@ -424,7 +407,7 @@
       event_data:
         action: close
     continue_on_timeout: false
-    timeout: 00:10:00
+    timeout: 00:30:00
   - type: turn_on
     device_id: 2243cca92f82d0cebbea6e0dd7e7af02
     entity_id: switch.isolated_contact_fixture_module
@@ -443,25 +426,33 @@
     entity_id: person.katie
     to: not_home
   condition: []
-  action:
-  - type: turn_off
-    device_id: 993e1a73a50a3a2241eac07922e915fd
-    entity_id: switch.switch_7
-    domain: switch
+  action: []
   mode: single
 - id: '1625185459312'
-  alias: Turn Off Battery Charger
+  alias: Tool Battery Charger
   description: ''
   trigger:
-  - platform: time_pattern
-    hours: '0'
+  - platform: device
+    type: turned_on
+    device_id: fef3bf6053aa6bf56ab10d2ad40db72c
+    entity_id: switch.battery_charger_on_off
+    domain: switch
   condition: []
   action:
+  - delay:
+      hours: 0
+      minutes: 0
+      seconds: 30
+      milliseconds: 0
+  - wait_template: '{{ states("sensor.battery_charger_electrical_measurement") | float
+      < 1 }}'
+    timeout: 06:00:00
+    continue_on_timeout: true
   - type: turn_off
     device_id: fef3bf6053aa6bf56ab10d2ad40db72c
     entity_id: switch.battery_charger_on_off
     domain: switch
-  mode: single
+  mode: restart
 - id: '1627096656686'
   alias: Basement Accessory Switch Turned Off
   description: ''
@@ -496,4 +487,149 @@
     after: sunset
   action:
   - scene: scene.watching_tv
+  mode: single
+- id: '1631154947969'
+  alias: Lamp Control
+  description: ''
+  trigger:
+  - platform: device
+    type: turned_on
+    device_id: 97ba41cc94f8d9a4f0f9c9c4c33617db
+    entity_id: switch.in_wall_smart_switch_2
+    domain: switch
+  - platform: device
+    type: turned_off
+    device_id: 97ba41cc94f8d9a4f0f9c9c4c33617db
+    entity_id: switch.in_wall_smart_switch_2
+    domain: switch
+  condition: []
+  action:
+  - wait_for_trigger:
+    - platform: device
+      type: turned_on
+      device_id: 97ba41cc94f8d9a4f0f9c9c4c33617db
+      entity_id: switch.in_wall_smart_switch_2
+      domain: switch
+    - platform: device
+      type: turned_off
+      device_id: 97ba41cc94f8d9a4f0f9c9c4c33617db
+      entity_id: switch.in_wall_smart_switch_2
+      domain: switch
+    timeout: 00:00:10
+    continue_on_timeout: false
+  - type: toggle
+    device_id: 11a53d50efc39b2800c8bfae061b90d7
+    entity_id: switch.lamp_on_off
+    domain: switch
+  mode: single
+  max: 2
+- id: '1631585601288'
+  alias: Scooter Charger
+  description: ''
+  trigger:
+  - platform: device
+    type: turned_on
+    device_id: 2982cd432035cd16a1061fab70463a67
+    entity_id: switch.smartthings_outletv4_2f8b0501_on_off
+    domain: switch
+  condition: []
+  action:
+  - delay:
+      hours: 0
+      minutes: 1
+      seconds: 0
+      milliseconds: 0
+  - wait_template: '{{ states("sensor.smartthings_outletv4_2f8b0501_electrical_measurement")
+      | float < 2.5 }}'
+    timeout: 06:00:00
+    continue_on_timeout: true
+  - type: turn_off
+    device_id: 2982cd432035cd16a1061fab70463a67
+    entity_id: switch.smartthings_outletv4_2f8b0501_on_off
+    domain: switch
+  mode: restart
+- id: '1632022643818'
+  alias: Kitchen Light Turned On
+  description: ''
+  trigger:
+  - platform: device
+    type: turned_on
+    device_id: 7922463895f19b1901ace7dd5c636ef0
+    entity_id: light.in_wall_smart_dimmer_4
+    domain: light
+  condition:
+  - condition: device
+    type: is_off
+    device_id: 641c149ffb7b8802c12115c0d05a7907
+    entity_id: light.in_wall_smart_dimmer_5
+    domain: light
+  action:
+  - type: turn_on
+    device_id: 7922463895f19b1901ace7dd5c636ef0
+    entity_id: light.in_wall_smart_dimmer_4
+    domain: light
+    brightness_pct: 100
+  mode: single
+- id: '1632087785543'
+  alias: Leave for School Reminder
+  description: ''
+  trigger:
+  - platform: time
+    at: 08:15:00
+  condition:
+  - condition: time
+    weekday:
+    - mon
+    - tue
+    - wed
+    - thu
+    - fri
+  action:
+  - service: rest_command.assistant_broadcast
+    data:
+      command: You need to leave for school in 5 minutes!
+  mode: single
+- id: '1632110684343'
+  alias: Turn off Garage Light
+  description: ''
+  trigger:
+  - platform: device
+    type: turned_on
+    device_id: 993e1a73a50a3a2241eac07922e915fd
+    entity_id: switch.switch_7
+    domain: switch
+  condition: []
+  action:
+  - wait_for_trigger:
+    - platform: state
+      entity_id: person.brady
+      to: not_home
+    - platform: state
+      entity_id: person.katie
+      to: not_home
+    timeout: 00:10:00
+  - type: turn_off
+    device_id: 993e1a73a50a3a2241eac07922e915fd
+    entity_id: switch.switch_7
+    domain: switch
+  mode: restart
+- id: '1632111204067'
+  alias: Katie Left Home
+  description: ''
+  trigger:
+  - platform: state
+    entity_id: person.katie
+    to: not_home
+  condition:
+  - condition: time
+    weekday:
+    - mon
+    - tue
+    - wed
+    - thu
+    - fri
+    after: 08:00:00
+    before: '17:00:00'
+  action:
+  - scene: scene.all_lights_off
   mode: single

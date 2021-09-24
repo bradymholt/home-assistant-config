@@ -1,5 +1,5 @@
 - id: '1620601408423'
-  name: Everything Off
+  name: All Lights Off
   entities:
     switch.multirelay:
       friendly_name: Fireplace
@@ -58,6 +58,7 @@
       state: 'off'
     switch.tv:
       friendly_name: TV
+      icon: mdi:television
       state: 'off'
 - id: '1630269454705'
   name: Dinner
@@ -78,10 +79,12 @@
     light.in_wall_smart_dimmer_4:
       supported_color_modes:
       - brightness
+      color_mode: brightness
+      brightness: 41
       friendly_name: Kitchen Overhead Light
       icon: mdi:fridge
       supported_features: 32
-      state: 'off'
+      state: 'on'
     switch.in_wall_smart_switch_2:
       friendly_name: Mantle Light
       icon: mdi:image
@@ -144,3 +147,38 @@
       supported_features: 32
       state: 'off'
   icon: mdi:human-female-boy
+- id: '1631116633532'
+  name: Alarm Triggered
+  entities:
+    light.in_wall_smart_dimmer_4:
+      supported_color_modes:
+      - brightness
+      color_mode: brightness
+      brightness: 41
+      friendly_name: Kitchen Overhead Light
+      icon: mdi:fridge
+      supported_features: 32
+      state: 'on'
+    switch.in_wall_smart_switch_3:
+      friendly_name: Living Room Overhead Light
+      icon: hass:fan
+      state: 'on'
+    light.in_wall_smart_dimmer:
+      supported_color_modes:
+      - brightness
+      color_mode: brightness
+      brightness: 255
+      friendly_name: Dining Room Light
+      icon: mdi:food-turkey
+      supported_features: 32
+      state: 'on'
+    light.in_wall_smart_dimmer_5:
+      supported_color_modes:
+      - brightness
+      color_mode: brightness
+      brightness: 255
+      friendly_name: Nook Light
+      icon: mdi:food
+      supported_features: 32
+      state: 'on'
+  icon: mdi:shield-home

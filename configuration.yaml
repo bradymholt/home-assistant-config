@@ -4,14 +4,24 @@ default_config:
 # https://community.home-assistant.io/t/steps-to-reduce-write-cycles-and-extend-sd-ssd-life-expectancy/291718
 logger:
   default: critical
+  #default: debug
   logs:
     # log level for HA core
     homeassistant.core: fatal
+    #homeassistant.core: debug
 recorder:
-  # We are using memory for the SQLite database so on a reboot everything is lost
-  db_url: "sqlite:///:memory:"
-  commit_interval: 30
+  #db_url: "sqlite:///:memory:" // If enabled, only memory is used so on a reboot everything is lost
+  commit_interval: 60 # Data will be persisted to database every 60 seconds
   purge_keep_days: 7
+  exclude:
+    domains: # List of all domains: https://community.home-assistant.io/t/where-can-i-find-a-list-of-domains/62654
+      - media_player
+    entities:
+      - sensor.hacs
+    entity_globs:
+      - sensor.pixel*
+      - sun*
+      - weather*
 
 homeassistant:
   name: Home
@@ -188,6 +198,13 @@ group:
     entities:
       - person.brady
       - person.katie
+      
+notify:
+  - name: all_phones
+    platform: group
+    services:
+      - service: mobile_app_brady_pixel_3
+      - service: mobile_app_pixel_3
 
 automation: !include automations.yaml
 script: !include scripts.yaml

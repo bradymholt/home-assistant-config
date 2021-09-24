@@ -74,13 +74,6 @@ broadcast:
 
         '
   mode: single
-vaccum_kitchen:
-  alias: Vaccum Kitchen
-  sequence:
-  - service: ifttt.trigger
-    data:
-      event: vacuum_kitchen
-  mode: single
 set_thermostats_sleep:
   alias: Set Thermostats Sleep
   sequence:
@@ -122,4 +115,60 @@ test:
     data:
       message: '{{notification_message}}'
       title: Test Title
+  mode: single
+tts_test:
+  sequence:
+  - repeat:
+      count: '10'
+      sequence:
+      - service: tts.google_say
+        data:
+          message: Exit the house immediately!  The police have been called.
+          entity_id: media_player.hub
+      - delay:
+          hours: 0
+          minutes: 0
+          seconds: 7
+          milliseconds: 0
+  mode: single
+  alias: TTS Test
+vacuum_room:
+  description: Vacuum Room
+  fields:
+    regions:
+      description: The room(s) to vacuum. (27=Kitchen, 25=Office)
+      required: true
+      default:
+      - region_id: '27'
+        type: rid
+      - region_id: '25'
+        type: rid
+  sequence:
+  - service: vacuum.send_command
+    data:
+      entity_id: vacuum.roombie
+      command: start
+      params:
+        pmap_id: ohG_V5ffRYaH_RnJesFkqw
+        regions: '{{ regions }}'
+        user_pmapv_id: 210505T150237
+  mode: single
+  alias: Vacuum Room
+vacuum_kitchen:
+  alias: Vacuum Kitchen
+  sequence:
+  - service: script.vacuum_room
+    data:
+      regions:
+      - region_id: '27'
+        type: rid
+  mode: single
+vacuum_office:
+  alias: Vacuum Office
+  sequence:
+  - service: script.vacuum_room
+    data:
+      regions:
+      - region_id: '25'
+        type: rid
   mode: single
