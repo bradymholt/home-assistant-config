@@ -35,13 +35,18 @@ snapshot_backup:
       input: trigger
   mode: single
 reset_media_volume:
-  alias: Reset Media Volume
+  alias: Set Media Volume Normal
   sequence:
   - service: media_player.volume_set
     data:
       volume_level: 0.6
     target:
       entity_id: media_player.hub
+  - delay:
+      hours: 0
+      minutes: 0
+      seconds: 5
+      milliseconds: 0
   - service: media_player.volume_set
     data:
       volume_level: 0.5
@@ -54,7 +59,7 @@ reset_media_volume:
       - media_player.master_bedroom
   mode: single
 play_spotify:
-  alias: Play Spotify on Latest Player
+  alias: '[Test] Play Spotify on Latest Player'
   sequence:
   - service: media_player.play_media
     target:
@@ -64,7 +69,7 @@ play_spotify:
       media_content_type: playlist
   mode: single
 broadcast:
-  alias: Google Assistant Broadcast
+  alias: '[Test] Google Assistant Broadcast'
   sequence:
   - service: rest_command.assistant_broadcast
     data:
@@ -92,11 +97,11 @@ play_spotify_in_office:
   sequence:
   - service: spotcast.start
     data:
-      entity_id: media_player.kids
       uri: spotify:playlist:1Ci88PYWYA5dDC173KnaF4
       start_volume: 50
+      entity_id: media_player.kids_and_master
   mode: single
-  alias: Play Christi Knockels on Spotify in Kids Room
+  alias: '[Test] Play Christi Knockels on Spotify in Kids Room'
 demo_google_assistant_sync_devices:
   alias: Sync Google Assistant Devices
   sequence:
@@ -105,16 +110,38 @@ demo_google_assistant_sync_devices:
       command: sync my devices
   mode: single
 test:
-  alias: Test
-  variables:
-    notification_message: "Alarm was triggered on: {% for state in states.binary_sensor\
-      \ -%}\n  {% if state.state == 'off' and state.name not in ['Updater','Rachio','And\
-      \ ignore this one'] %}\n    {{ state.name }}\n  {%- endif -%}\n{%- endfor -%}\n"
+  alias: '[Test] Test'
+  description: ''
   sequence:
-  - service: notify.mobile_app_brady_pixel_3
+  - service: script.turn_on
+    target:
+      entity_id: script.reset_media_volume
+  - service: media_player.play_media
+    target:
+      entity_id: media_player.hub
     data:
-      message: '{{notification_message}}'
-      title: Test Title
+      media_content_id: https://pineglade.duckdns.org:8123/local/sounds/ding-1.mp3
+      media_content_type: music
+  - delay:
+      hours: 0
+      minutes: 0
+      seconds: 2
+      milliseconds: 0
+  - service: tts.google_say
+    data:
+      entity_id: media_player.hub
+      message: "{{ [\"Welcome home!\", \"Hey there!\", \"I missed you.\", \"Welcome\
+        \ back home.\"] | random }} \n"
+  - delay:
+      hours: 0
+      minutes: 0
+      seconds: 2
+      milliseconds: 0
+  - service: tts.google_say
+    data:
+      entity_id: media_player.hub
+      message: It's{%- if now().hour >= 13 -%} {{ "" }} {{ now().hour - 12 }}{% else
+        %}{{ now().hour }}{% endif %}:{{ now().minute }}
   mode: single
 tts_test:
   sequence:
@@ -131,7 +158,7 @@ tts_test:
           seconds: 7
           milliseconds: 0
   mode: single
-  alias: TTS Test
+  alias: '[Test]  TTS'
 vacuum_room:
   description: Vacuum Room
   fields:
@@ -171,4 +198,66 @@ vacuum_office:
       regions:
       - region_id: '25'
         type: rid
+  mode: single
+back_home_greeting:
+  alias: Back Home Greeting
+  sequence:
+  - service: script.turn_on
+    target:
+      entity_id: script.reset_media_volume
+  - service: media_player.turn_on
+    target:
+      entity_id: media_player.all_speakers
+  - delay:
+      hours: 0
+      minutes: 0
+      seconds: 3
+      milliseconds: 0
+  - service: tts.google_say
+    data:
+      entity_id: media_player.all_speakers
+      message: '{{ ["Disarming the alarm", "The alarm has been disarmed", "Welcome
+        home!", "Hey there!", "I missed you.", "Welcome back home."] | random }} It''s
+        {%- if now().hour >= 13 -%} {{ "" }} {{ now().hour - 12 }}{% else %}{{ now().hour
+        }}{% endif %} {%- if now().minute < 10 -%}{{ "o" }}{% endif %} {{ now().minute
+        }}.
+
+        '
+  description: ''
+  mode: single
+test_play_sound_file:
+  alias: '[Test] Play Sound File'
+  sequence:
+  - service: media_player.play_media
+    data:
+      media_content_id: https://pineglade.duckdns.org:8123/local/sounds/{{ ["high-tech-beep-1.wav",
+        "high-tech-beep-2.wav", "high-tech-beep-3.wav", "high-tech-beep-4.wav"] |
+        random }}
+      media_content_type: music
+    target:
+      entity_id: media_player.all_speakers
+  mode: single
+media_soft_volume:
+  alias: Set Media Volume Soft
+  sequence:
+  - service: media_player.volume_set
+    data:
+      volume_level: 0.6
+    target:
+      entity_id: media_player.hub
+  - delay:
+      hours: 0
+      minutes: 0
+      seconds: 5
+      milliseconds: 0
+  - service: media_player.volume_set
+    data:
+      volume_level: 0.4
+    target:
+      entity_id:
+      - media_player.office
+      - media_player.basement_speaker
+      - media_player.austin_s_room
+      - media_player.kayla_s_room
+      - media_player.master_bedroom
   mode: single

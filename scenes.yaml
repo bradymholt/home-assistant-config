@@ -60,6 +60,9 @@
       friendly_name: TV
       icon: mdi:television
       state: 'off'
+    switch.ewelink_sa_003_zigbee_659cea22_on_off:
+      friendly_name: Lamp
+      state: 'off'
 - id: '1630269454705'
   name: Dinner
   entities:
