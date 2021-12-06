@@ -229,6 +229,18 @@ switch:
           service: switch.turn_on
           target:
             entity_id: switch.ewelink_sa_003_zigbee_c520e922_on_off
+      space_heater_off:
+        unique_id: 2843b4d0-4182-489f-bba1-f7134276ab18
+        friendly_name: Space Heater Off
+        value_template: "{{ is_state('switch.office_space_heater_on_off', 'off') }}"
+        turn_on:
+          service: switch.turn_off
+          target:
+            entity_id: switch.office_space_heater_on_off
+        turn_off:
+          service: switch.turn_on
+          target:
+            entity_id: switch.office_space_heater_on_off
 input_boolean:
   baby_sitter_mode:
     name: Babysitter Mode
@@ -250,6 +262,10 @@ notify:
     platform: group
     services:
       - service: mobile_app_brady_pixel_3
+      - service: mobile_app_pixel_3
+  - name: katie_phone
+    platform: group
+    services:
       - service: mobile_app_pixel_3
 
 automation: !include automations.yaml

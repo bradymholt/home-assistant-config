@@ -1,9 +1,9 @@
 - id: '1620601408423'
-  name: All Lights Off
+  name: Everything Off
   entities:
     switch.multirelay:
-      friendly_name: Fireplace
-      icon: mdi:fireplace
+      friendly_name: Fireplace Multirelay Global Switch
+      icon: mdi:dip-switch
       state: 'off'
     light.in_wall_smart_dimmer_3:
       supported_color_modes:
@@ -30,13 +30,9 @@
       friendly_name: Garage Light
       icon: hass:lightbulb
       state: 'off'
-    switch.lamp_on_off:
-      friendly_name: Lamp
-      icon: mdi:floor-lamp
-      state: 'off'
     switch.in_wall_smart_switch_3:
       friendly_name: Living Room Overhead Light
-      icon: hass:fan
+      icon: mdi:ceiling-fan-light
       state: 'off'
     switch.in_wall_smart_switch_2:
       friendly_name: Mantle Light
@@ -60,15 +56,34 @@
       friendly_name: TV
       icon: mdi:television
       state: 'off'
-    switch.ewelink_sa_003_zigbee_659cea22_on_off:
-      friendly_name: Lamp
+    light.smart_plug_dimmer:
+      supported_color_modes:
+      - brightness
+      friendly_name: Living Room Lamp
+      icon: mdi:floor-lamp
+      supported_features: 32
       state: 'off'
+    switch.in_wall_smart_switch_5:
+      friendly_name: Office Lamp Switch
+      state: 'off'
+    light.in_wall_smart_dimmer_6:
+      supported_color_modes:
+      - brightness
+      friendly_name: Stairwell Overhead Light
+      icon: mdi:stairs
+      supported_features: 32
+      state: 'off'
+    switch.in_wall_smart_switch_6:
+      friendly_name: Central Hall Light
+      icon: mdi:light-recessed
+      state: 'off'
+  icon: mdi:home-export-outline
 - id: '1630269454705'
   name: Dinner
   entities:
     switch.in_wall_smart_switch_3:
       friendly_name: Living Room Overhead Light
-      icon: hass:fan
+      icon: mdi:ceiling-fan-light
       state: 'off'
     light.in_wall_smart_dimmer_5:
       supported_color_modes:
@@ -92,12 +107,30 @@
       friendly_name: Mantle Light
       icon: mdi:image
       state: 'off'
-    switch.lamp_on_off:
-      friendly_name: Lamp
-      icon: mdi:floor-lamp
-      state: 'off'
     switch.tv:
       friendly_name: TV
+      icon: mdi:television
+      state: 'off'
+    light.in_wall_smart_dimmer:
+      supported_color_modes:
+      - brightness
+      friendly_name: Dining Room Light
+      icon: mdi:food-turkey
+      supported_features: 32
+      state: 'off'
+    light.smart_plug_dimmer:
+      supported_color_modes:
+      - brightness
+      friendly_name: Living Room Lamp
+      icon: mdi:floor-lamp
+      supported_features: 32
+      state: 'off'
+    light.in_wall_smart_dimmer_6:
+      supported_color_modes:
+      - brightness
+      friendly_name: Stairwell Overhead Light
+      icon: mdi:stairs
+      supported_features: 32
       state: 'off'
   icon: mdi:food-turkey
 - id: '1630287668483'
@@ -119,16 +152,26 @@
       state: 'off'
     switch.in_wall_smart_switch_3:
       friendly_name: Living Room Overhead Light
-      icon: hass:fan
-      state: 'off'
-    switch.lamp_on_off:
-      friendly_name: Lamp
-      icon: mdi:floor-lamp
+      icon: mdi:ceiling-fan-light
       state: 'off'
     switch.in_wall_smart_switch_2:
       friendly_name: Mantle Light
       icon: mdi:image
       state: 'on'
+    light.smart_plug_dimmer:
+      supported_color_modes:
+      - brightness
+      friendly_name: Living Room Lamp
+      icon: mdi:floor-lamp
+      supported_features: 32
+      state: 'off'
+    light.in_wall_smart_dimmer_6:
+      supported_color_modes:
+      - brightness
+      friendly_name: Stairwell Overhead Light
+      icon: mdi:stairs
+      supported_features: 32
+      state: 'off'
   icon: mdi:television
 - id: '1630384475620'
   name: Kids Bedtime
@@ -164,7 +207,7 @@
       state: 'on'
     switch.in_wall_smart_switch_3:
       friendly_name: Living Room Overhead Light
-      icon: hass:fan
+      icon: mdi:ceiling-fan-light
       state: 'on'
     light.in_wall_smart_dimmer:
       supported_color_modes:
@@ -183,5 +226,18 @@
       friendly_name: Nook Light
       icon: mdi:food
       supported_features: 32
+      state: 'on'
+    light.in_wall_smart_dimmer_6:
+      supported_color_modes:
+      - brightness
+      color_mode: brightness
+      brightness: 255
+      friendly_name: Stairwell Overhead Light
+      icon: mdi:stairs
+      supported_features: 32
+      state: 'on'
+    switch.in_wall_smart_switch_6:
+      friendly_name: Central Hall Light
+      icon: mdi:light-recessed
       state: 'on'
   icon: mdi:shield-home
