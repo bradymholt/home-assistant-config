@@ -1,48 +1,38 @@
 - id: '1620249551703'
-  alias: Bedtime / Kids
+  alias: At Bedtime Kids 08:30 PM / Prepare  for Kids Sleep
   description: ''
   trigger:
   - platform: time
     at: '20:30:00'
+  - platform: time
+    at: '22:00:00'
   condition:
   - condition: state
     entity_id: group.presence_home
     state: home
   action:
-  - device_id: 112c271f3e3cbc53f7fe37108abe7be3
-    domain: climate
-    entity_id: climate.basement_thermostat
-    type: set_preset_mode
-    preset_mode: Sleep
+  - device_id: 852e37b9f21f018aff200d7c20154842
+    domain: select
+    entity_id: ac0ad92e47201489e0e74236132beb98
+    type: select_option
+    option: sleep
   mode: single
 - id: '1620249701339'
-  alias: Bedtime / Adults
+  alias: At Bedtime 11:30 PM / Prepare for Sleep
   description: ''
   trigger:
   - platform: time
     at: '23:30:00'
-  - type: plugged_in
-    platform: device
-    device_id: eba6ece3b81290d2f065f22210651d2c
-    entity_id: binary_sensor.brady_pixel_3_is_charging
-    domain: binary_sensor
   condition:
   - condition: state
     entity_id: group.presence_home
     state: home
-  - condition: time
-    after: '21:30:00'
-    before: 02:00:00
   action:
-  - scene: scene.all_lights_off
   - service: script.set_thermostats_sleep
-  - type: turn_on
-    device_id: f59e804d4149adc72e3abaa49f0cad5c
-    entity_id: switch.ewelink_sa_003_zigbee_57fad522_on_off
-    domain: switch
+    data: {}
   mode: single
 - id: '1620249919663'
-  alias: Location / Everyone Left
+  alias: Location Everyone Left / Turn Things Off And Secure
   description: ''
   trigger:
   - platform: state
@@ -56,34 +46,34 @@
   - service: script.turn_on
     target:
       entity_id: script.set_thermostats_away
-  - device_id: 5de0014dbd651a0ab324fb0169a472d8
-    domain: alarm_control_panel
-    entity_id: alarm_control_panel.lyricaiod74830
-    type: arm_away
-    code: ''
+    data: {}
   - scene: scene.all_lights_off
-  - service: switch.turn_on
-    target:
-      entity_id: switch.space_heater_off
-  - choose:
-    - conditions:
-      - condition: device
-        device_id: ebca73f7dc18a0651c75f0e9a18b501b
-        domain: media_player
-        entity_id: media_player.spotify_bradyholt1980
-        type: is_playing
-      sequence:
-      - service: media_player.media_pause
-        target:
-          entity_id: media_player.spotify_bradyholt1980
-    default: []
+  - type: turn_off
+    device_id: f2c45b72aaacc11f7a3cb057f810f2f0
+    entity_id: 356ff013009786745ab758d68c0ff628
+    domain: switch
+  - service: script.media_player_stop
+    data: {}
+  - device_id: e222f4faff9920573b5ff6d59236657a
+    domain: alarm_control_panel
+    entity_id: 40b6b02264dc060346c6209a80a0f85a
+    type: arm_away
+  - device_id: 6e55735404c71f83509e20d4ecda91db
+    domain: lock
+    entity_id: d4a8dc885472ee6f74f2d3a00bfe9124
+    type: lock
+  - service: script.close_both_garage_doors
+    data: {}
   mode: single
 - id: '1620249986759'
-  alias: Location / Anyone Back Home
+  alias: X Location / Anyone Back Home
   description: ''
   trigger:
   - platform: state
-    entity_id: group.presence_home
+    to: home
+    entity_id: person.brady
+  - platform: state
+    entity_id: person.katie
     to: home
   condition: []
   action:
@@ -92,10 +82,25 @@
       - condition: template
         value_template: '{{state_attr(''climate.main_thermostat'',''preset_mode'')
           != "Sleep" }}'
+      - condition: or
+        conditions:
+        - condition: not
+          conditions:
+          - condition: time
+            before: '15:30:00'
+            weekday:
+            - mon
+            - tue
+            - wed
+            - thu
+            - fri
+        - condition: state
+          entity_id: person.katie
+          state: home
       sequence:
-      - device_id: 63d3bbd0a41e453a8732a7119093e631
+      - device_id: c46ace8d8efc93e5ff7d0030ea5c7bd3
         domain: climate
-        entity_id: climate.main_thermostat
+        entity_id: climate.downstairs
         type: set_preset_mode
         preset_mode: Home
     default: []
@@ -104,7 +109,7 @@
       - condition: not
         conditions:
         - condition: time
-          before: '15:30:00'
+          before: '15:00:00'
           weekday:
           - mon
           - tue
@@ -112,80 +117,65 @@
           - thu
           - fri
       - condition: template
-        value_template: '{{state_attr(''climate.basement_thermostat'',''preset_mode'')
-          != "Sleep" }}'
+        value_template: '{{state_attr(''climate.upstairs'',''preset_mode'') != "Sleep"
+          }}'
       sequence:
-      - device_id: 112c271f3e3cbc53f7fe37108abe7be3
+      - device_id: a2257d3e35e8fdc03f9d469fb80d9314
         domain: climate
-        entity_id: climate.basement_thermostat
+        entity_id: climate.upstairs
         type: set_preset_mode
         preset_mode: Home
     default: []
   mode: single
 - id: '1620250066477'
-  alias: Wake / Prepare for the Day
+  alias: At Wake 6AM / Prepare for the Day
   description: ''
   trigger:
   - platform: time
-    at: 06:30:00
+    at: 06:00:00
   condition:
   - condition: state
     entity_id: group.presence_home
     state: home
   action:
   - service: script.set_thermostats_home
+    data: {}
   - service: input_boolean.turn_off
     target:
       entity_id: input_boolean.baby_sitter_mode
-  - device_id: 5de0014dbd651a0ab324fb0169a472d8
-    domain: alarm_control_panel
-    entity_id: alarm_control_panel.lyricaiod74830
-    type: disarm
+    data: {}
+  - delay:
+      hours: 0
+      minutes: 0
+      seconds: 5
+      milliseconds: 0
+  - scene: scene.all_lights_off
   mode: single
 - id: '1620250574161'
-  alias: Bedtime / Secure House
+  alias: At  Bedtime 10:30 PM / Secure House
   description: ''
   trigger:
   - platform: time
     at: '22:30:00'
   condition: []
   action:
+  - device_id: e222f4faff9920573b5ff6d59236657a
+    domain: alarm_control_panel
+    entity_id: 40b6b02264dc060346c6209a80a0f85a
+    type: arm_home
   - type: turn_off
-    device_id: 946a86ade4e3571c3826df4cfb0a3878
-    entity_id: switch.in_wall_smart_switch_4
+    device_id: 9af9423bedd90431bfe5862c9a0aebe7
+    entity_id: 5fe27a4532b6326d73767720c74f0800
     domain: switch
-  - choose:
-    - conditions:
-      - condition: device
-        device_id: 5de0014dbd651a0ab324fb0169a472d8
-        domain: alarm_control_panel
-        entity_id: alarm_control_panel.lyricaiod74830
-        type: is_disarmed
-      sequence:
-      - device_id: 5de0014dbd651a0ab324fb0169a472d8
-        domain: alarm_control_panel
-        entity_id: alarm_control_panel.lyricaiod74830
-        type: arm_home
-    default: []
-  - choose:
-    - conditions:
-      - type: is_open
-        condition: device
-        device_id: c76bb7991c083368faaa72d93037def9
-        entity_id: binary_sensor.universal_electronics_inc_urc4460bc0_x_r_ias_zone
-        domain: binary_sensor
-      sequence:
-      - type: turn_on
-        device_id: 2243cca92f82d0cebbea6e0dd7e7af02
-        entity_id: switch.garage_door_opener
-        domain: switch
-      - service: notify.mobile_app_brady_pixel_3
-        data:
-          message: The garage door has been closed.
-    default: []
+  - device_id: 6e55735404c71f83509e20d4ecda91db
+    domain: lock
+    entity_id: d4a8dc885472ee6f74f2d3a00bfe9124
+    type: lock
+  - service: script.close_both_garage_doors
+    data: {}
   mode: single
 - id: '1620250640060'
-  alias: Sunset / Turn Off Outside Lights
+  alias: At Sunset / Turn On Outside Lights
   description: ''
   trigger:
   - platform: sun
@@ -193,32 +183,23 @@
   condition: []
   action:
   - type: turn_on
-    device_id: 946a86ade4e3571c3826df4cfb0a3878
-    entity_id: switch.in_wall_smart_switch_4
+    device_id: 9af9423bedd90431bfe5862c9a0aebe7
+    entity_id: 5fe27a4532b6326d73767720c74f0800
     domain: switch
   mode: single
 - id: '1620326722339'
-  alias: Momentary Switch / Turn Off After 2s
+  alias: X Momentary Switch On / Turn Off After 5s
   description: ''
   trigger:
   - platform: state
     entity_id: switch.garage_door_opener
-    to: 'on'
-  - platform: state
-    entity_id: switch.austin_air_filter_off
-    to: 'on'
-  - platform: state
-    entity_id: switch.master_air_filter_off
-    to: 'on'
-  - platform: state
-    entity_id: switch.space_heater_off
     to: 'on'
   condition: []
   action:
   - delay:
       hours: 0
       minutes: 0
-      seconds: 2
+      seconds: 5
       milliseconds: 0
   - service: switch.turn_off
     target:
@@ -226,7 +207,7 @@
   mode: parallel
   max: 10
 - id: '1620835500489'
-  alias: Vacuum / Kitchen After Dinner
+  alias: X Vacuum / Kitchen After Dinner
   description: ''
   trigger:
   - platform: time
@@ -238,31 +219,38 @@
   action:
   - service: script.turn_on
     target:
-      entity_id: script.vaccum_kitchen
+      entity_id:
+      - script.vacuum_kitchen
+    data: {}
   mode: single
 - id: '1620835622206'
-  alias: Alarm / Triggered
+  alias: Alarm Triggered / Deter Burglar
   description: ''
   trigger:
   - platform: device
-    device_id: 5de0014dbd651a0ab324fb0169a472d8
+    device_id: e222f4faff9920573b5ff6d59236657a
     domain: alarm_control_panel
-    entity_id: alarm_control_panel.lyricaiod74830
+    entity_id: 40b6b02264dc060346c6209a80a0f85a
     type: triggered
   condition: []
   action:
+  - type: turn_on
+    device_id: bb21c77f29c4e565c693d9b1dd1b9702
+    entity_id: 697394d506e4ad4259e348af1853a304
+    domain: switch
   - service: notify.all_phones
     data:
       title: '*ALARM TRIGGERED!*'
-      message: "Alarm was triggered on: {% for state in states.binary_sensor -%}\n\
-        \  {% if state.state == 'on' and state.name not in ['Updater','Rachio','Roombie\
-        \ Bin Full','And ignore this one'] %}\n    {{ state.name }}\n  {%- endif -%}\n\
-        {%- endfor -%}  \n"
+      message: "Alarm was triggered on: {% for state in states.binary_sensor -%}\n
+        \ {% if state.state == 'on' and state.name not in ['Updater'] and not state.name.startswith(('Rachio',
+        'Roku', 'Roombie', 'Garage Door Tilt', 'Brady', 'Katie')) %}\n    {{ state.name
+        }}\n  {%- endif -%}\n{%- endfor -%} \n"
+      data:
+        ttl: 0
+        priority: high
   - scene: scene.alarm_triggered
-  - type: turn_on
-    device_id: 2243cca92f82d0cebbea6e0dd7e7af02
-    entity_id: switch.garage_door_opener
-    domain: switch
+  - service: script.open_both_garages
+    data: {}
   - service: media_player.volume_set
     target:
       entity_id: media_player.hub
@@ -280,13 +268,21 @@
           minutes: 0
           seconds: 7
           milliseconds: 0
+      - if:
+        - condition: device
+          device_id: e222f4faff9920573b5ff6d59236657a
+          domain: alarm_control_panel
+          entity_id: 40b6b02264dc060346c6209a80a0f85a
+          type: is_disarmed
+        then:
+        - stop: Disarmed
   mode: single
   variables:
-    notification_message: "Alarm was triggered on: {% for state in states.binary_sensor\
-      \ -%}\n  {% if state.state == 'on' and state.name not in ['Updater','Rachio','And\
-      \ ignore this one'] %}\n    {{ state.name }}\n  {%- endif -%}\n{%- endfor -%}\n"
+    notification_message: "Alarm was triggered on: {% for state in states.binary_sensor
+      -%}\n  {% if state.state == 'on' and state.name not in ['Updater','Rachio','And
+      ignore this one'] %}\n    {{ state.name }}\n  {%- endif -%}\n{%- endfor -%}\n"
 - id: '1620876945501'
-  alias: Basement / Light Switch On
+  alias: X Basement / Light Switch On
   description: ''
   trigger:
   - platform: device
@@ -298,12 +294,12 @@
   action:
   - service: timer.start
     data:
-      duration: 00:10:00
+      duration: 00:30:00
     target:
       entity_id: timer.basement_lights_out_timer
   mode: restart
 - id: '1621002215197'
-  alias: Garage / Side Yard Door Opened After Dark
+  alias: X Garage / Side Yard Door Opened After Dark
   description: ''
   trigger:
   - type: opened
@@ -330,7 +326,7 @@
     domain: switch
   mode: restart
 - id: '1621035816345'
-  alias: Wake / School
+  alias: At Wake Austin 7AM / Get Ready for School
   description: ''
   trigger:
   - platform: time
@@ -343,43 +339,71 @@
     - wed
     - thu
     - fri
+    before: 00:00:00
+    after: 00:00:00
+  - condition: state
+    entity_id: input_boolean.no_school_tomorrow_mode
+    state: 'off'
   action:
   - service: script.turn_on
     target:
       entity_id: script.media_soft_volume
+    data: {}
   - delay:
       hours: 0
       minutes: 0
       seconds: 5
       milliseconds: 0
-  - service: spotcast.start
+  - service: google_assistant_sdk.send_text_command
     data:
-      uri: spotify:playlist:37i9dQZF1DZ06evO0vqEZo
-      entity_id: media_player.kids_and_master
-  mode: single
+      command: broadcast to Austin's Room Good morning Austin
+  - service: spotcast.start
+    continue_on_error: true
+    data:
+      uri: spotify:playlist:03qN71KVyjqh02ZiOKSRew
+      device_name: Austin’s Room
+  - wait_for_trigger:
+    - platform: time
+      at: 07:40:00
+    continue_on_timeout: false
+    timeout: 01:00:00
+  - service: google_assistant_sdk.send_text_command
+    data:
+      command: broadcast to Austin's Room Austin you need to leave for school in 5
+        minutes
+  - wait_for_trigger:
+    - platform: time
+      at: 07:45:00
+    continue_on_timeout: false
+    timeout: 01:00:00
+  - service: google_assistant_sdk.send_text_command
+    data:
+      command: broadcast to Austin's Room Austin you need to leave for school
+  mode: restart
 - id: '1624931488173'
-  alias: Garage / Door Left Open
+  alias: X Garage / Door Left Open
   description: ''
   trigger:
   - type: opened
     platform: device
-    device_id: c76bb7991c083368faaa72d93037def9
-    entity_id: binary_sensor.universal_electronics_inc_urc4460bc0_x_r_ias_zone
+    device_id: 961d9c13fbfb85428a4a56a655af62de
+    entity_id: binary_sensor.garage_door_tilt_access_control_window_door_is_open
     domain: binary_sensor
     for:
-      hours: 1
+      hours: 2
       minutes: 0
       seconds: 0
-      milliseconds: 0
   condition: []
   action:
   - service: notify.all_phones
     data:
-      message: The garage door has been open for 1 hour.
+      message: The garage door has been open for 2 hours.
       data:
         actions:
         - action: garage_close
           title: Close
+        ttl: 0
+        priority: high
   - wait_for_trigger:
     - platform: event
       event_type: mobile_app_notification_action
@@ -412,7 +436,7 @@
     domain: switch
   mode: single
 - id: '1625185459312'
-  alias: Charger / Tool Battery Fully Charged
+  alias: Charger Drill Battery On / Off When Charged
   description: ''
   trigger:
   - platform: device
@@ -420,15 +444,15 @@
     device_id: fef3bf6053aa6bf56ab10d2ad40db72c
     entity_id: switch.battery_charger_on_off
     domain: switch
+    for:
+      hours: 0
+      minutes: 20
+      seconds: 0
   condition: []
   action:
-  - delay:
-      hours: 0
-      minutes: 0
-      seconds: 30
-      milliseconds: 0
   - wait_template: '{{ states("sensor.battery_charger_electrical_measurement") | float
-      < 1 and as_timestamp(states(''sensor.date_time_iso'')) != null }}'
+      < 2.5 and as_timestamp(states.sensor.battery_charger_electrical_measurement.last_updated)
+      is defined }}'
     timeout: 06:00:00
     continue_on_timeout: true
   - type: turn_off
@@ -437,14 +461,9 @@
     domain: switch
   mode: restart
 - id: '1627096656686'
-  alias: Basement / Side Light Accessory Control
+  alias: X Basement / Accessory Switch On
   description: ''
   trigger:
-  - platform: device
-    type: turned_off
-    device_id: 4b35e304f1192aae17926aa9cb6f426b
-    entity_id: switch.in_wall_smart_switch
-    domain: switch
   - platform: device
     type: turned_on
     device_id: 4b35e304f1192aae17926aa9cb6f426b
@@ -452,36 +471,20 @@
     domain: switch
   condition: []
   action:
-  - type: toggle
+  - type: turn_on
     device_id: 24ac4d037a2409175364f29aeadb73f3
     entity_id: light.in_wall_smart_dimmer_2
     domain: light
-  - choose:
-    - conditions:
-      - condition: device
-        type: is_on
-        device_id: 24ac4d037a2409175364f29aeadb73f3
-        entity_id: light.in_wall_smart_dimmer_2
-        domain: light
-      sequence:
-      - type: turn_on
-        device_id: 4b35e304f1192aae17926aa9cb6f426b
-        entity_id: switch.in_wall_smart_switch
-        domain: switch
-    default:
-    - type: turn_off
-      device_id: 4b35e304f1192aae17926aa9cb6f426b
-      entity_id: switch.in_wall_smart_switch
-      domain: switch
+    brightness_pct: 100
   mode: single
 - id: '1630678474698'
-  alias: Living Room / Watching TV at Night
+  alias: X Living Room / Watching TV at Night
   description: ''
   trigger:
   - platform: device
     type: turned_on
-    device_id: f79459e1d13004b79e0d8a5124b10cb3
-    entity_id: switch.tv
+    device_id: 373283655e2e29f5a248337c3d0d4a07
+    entity_id: 90c4ffc691062c4fac18c56c90ba0fcf
     domain: switch
   condition:
   - condition: time
@@ -490,7 +493,7 @@
   - scene: scene.watching_tv
   mode: single
 - id: '1631585601288'
-  alias: Charger / Scooter Fully Charged
+  alias: Charger Bike On / Off When Charged
   description: ''
   trigger:
   - platform: device
@@ -502,62 +505,21 @@
   action:
   - delay:
       hours: 0
-      minutes: 1
+      minutes: 2
       seconds: 0
       milliseconds: 0
   - wait_template: '{{ states("sensor.smartthings_outletv4_2f8b0501_electrical_measurement")
-      | float < 2.5 and as_timestamp(states(''sensor.date_time_iso'')) != null }}'
-    timeout: 06:00:00
+      | float < 2.5 and as_timestamp(states.sensor.smartthings_outletv4_2f8b0501_electrical_measurement.last_updated)
+      is defined }}'
+    timeout: '10:00:00'
     continue_on_timeout: true
   - type: turn_off
     device_id: 2982cd432035cd16a1061fab70463a67
     entity_id: switch.smartthings_outletv4_2f8b0501_on_off
     domain: switch
   mode: restart
-- id: '1632022643818'
-  alias: Kitchen / Light Switch On
-  description: ''
-  trigger:
-  - platform: device
-    type: turned_on
-    device_id: 7922463895f19b1901ace7dd5c636ef0
-    entity_id: light.in_wall_smart_dimmer_4
-    domain: light
-  condition:
-  - condition: device
-    type: is_off
-    device_id: 641c149ffb7b8802c12115c0d05a7907
-    entity_id: light.in_wall_smart_dimmer_5
-    domain: light
-  action:
-  - type: turn_on
-    device_id: 7922463895f19b1901ace7dd5c636ef0
-    entity_id: light.in_wall_smart_dimmer_4
-    domain: light
-    brightness_pct: 100
-  mode: single
-- id: '1632087785543'
-  alias: Reminder / Leave for School
-  description: ''
-  trigger:
-  - platform: time
-    at: 08:15:00
-  condition:
-  - condition: time
-    weekday:
-    - mon
-    - tue
-    - wed
-    - thu
-    - fri
-  action:
-  - service: script.reset_media_volume
-  - service: rest_command.assistant_broadcast
-    data:
-      command: You need to leave for school in 5 minutes!
-  mode: single
 - id: '1632111204067'
-  alias: Location / Katie Left Home During Workweek
+  alias: X Location / Katie Left Home During Workweek
   description: ''
   trigger:
   - platform: state
@@ -575,22 +537,23 @@
     before: '17:00:00'
   action:
   - scene: scene.all_lights_off
-  - device_id: 112c271f3e3cbc53f7fe37108abe7be3
-    domain: climate
-    entity_id: climate.basement_thermostat
-    type: set_preset_mode
-    preset_mode: Away
+  - service: script.turn_on
+    data: {}
+    target:
+      entity_id: script.set_thermostats_away
   mode: single
 - id: '1632679381205'
-  alias: Wake / Sunday Worship
+  alias: At Sunday Morning / Prepare for Church
   description: ''
   trigger:
   - platform: time
-    at: 07:45:00
+    at: 08:30:00
   condition:
   - condition: time
     weekday:
     - sun
+    before: 00:00:00
+    after: 00:00:00
   - condition: state
     entity_id: group.presence_home
     state: home
@@ -598,6 +561,7 @@
   - service: script.turn_on
     target:
       entity_id: script.media_soft_volume
+    data: {}
   - delay:
       hours: 0
       minutes: 0
@@ -605,13 +569,39 @@
       milliseconds: 0
   - service: spotcast.start
     data:
-      entity_id: media_player.all_speakers
-      uri: spotify:playlist:37i9dQZF1DX4levbzTG2FX
+      entity_id: media_player.hub
+      uri: spotify:playlist:4cPVKyM1ZpDWgzHIgBtugi
       random_song: true
       shuffle: true
+  - wait_for_trigger:
+    - platform: time
+      at: 09:30:00
+    continue_on_timeout: false
+    timeout:
+      hours: 1
+      minutes: 30
+      seconds: 0
+      milliseconds: 0
+  - service: script.reset_media_volume
+    data: {}
+  - service: google_assistant_sdk.send_text_command
+    data:
+      command: broadcast You need to leave for church in 15 minutes!
+  - wait_for_trigger:
+    - platform: time
+      at: 09:45:00
+    continue_on_timeout: false
+    timeout:
+      hours: 1
+      minutes: 30
+      seconds: 0
+      milliseconds: 0
+  - service: google_assistant_sdk.send_text_command
+    data:
+      command: broadcast It is time to leave for church!
   mode: single
 - id: '1632680018957'
-  alias: Vacuum / House On Monday Morning
+  alias: At Monday 08:00 AM / Prompt to Vacuum
   description: ''
   trigger:
   - platform: time
@@ -630,6 +620,8 @@
           title: 'Yes'
         - action: cancel
           title: 'No'
+        ttl: 0
+        priority: high
   - wait_for_trigger:
     - platform: event
       event_type: mobile_app_notification_action
@@ -645,52 +637,23 @@
   - service: vacuum.start
     target:
       entity_id: vacuum.roombie
+    data: {}
   mode: single
 - id: '1633059567658'
-  alias: Wake / Fans and Filters Off
+  alias: At Wake 9AM  / Fans Off
   description: ''
   trigger:
   - platform: time
-    at: 08:00:00
+    at: 09:00:00
   condition: []
   action:
-  - service: switch.turn_on
-    target:
-      entity_id: switch.austin_air_filter_off
-  - service: switch.turn_on
-    target:
-      entity_id: switch.master_air_filter_off
   - type: turn_off
     device_id: f59e804d4149adc72e3abaa49f0cad5c
     entity_id: switch.ewelink_sa_003_zigbee_57fad522_on_off
     domain: switch
   mode: single
-- id: '1634178088026'
-  alias: Reminder / Leave for Church
-  description: ''
-  trigger:
-  - platform: time
-    at: 08:35:00
-  condition:
-  - condition: time
-    weekday:
-    - sun
-  action:
-  - service: script.reset_media_volume
-  - service: rest_command.assistant_broadcast
-    data:
-      command: You need to leave for church in 10 minutes!
-  - delay:
-      hours: 0
-      minutes: 10
-      seconds: 0
-      milliseconds: 0
-  - service: rest_command.assistant_broadcast
-    data:
-      command: It is time to leave for church!
-  mode: single
 - id: '1635645593462'
-  alias: Basement / Motion
+  alias: X Basement / Motion
   description: ''
   trigger:
   - type: motion
@@ -702,12 +665,12 @@
   action:
   - service: timer.start
     data:
-      duration: 00:10:00
+      duration: 00:30:00
     target:
       entity_id: timer.basement_lights_out_timer
   mode: single
 - id: '1635645861343'
-  alias: Basement / Light Timer Finished
+  alias: X Basement / Light Timer Finished
   description: ''
   trigger:
   - platform: event
@@ -726,7 +689,7 @@
     domain: light
   mode: single
 - id: '1635957927686'
-  alias: Garage / Any Door Opened
+  alias: X Garage / Any Door Opened
   description: ''
   trigger:
   - type: opened
@@ -741,8 +704,8 @@
     domain: binary_sensor
   - type: opened
     platform: device
-    device_id: c76bb7991c083368faaa72d93037def9
-    entity_id: binary_sensor.universal_electronics_inc_urc4460bc0_x_r_ias_zone
+    device_id: 961d9c13fbfb85428a4a56a655af62de
+    entity_id: binary_sensor.garage_door_tilt_access_control_window_door_is_open
     domain: binary_sensor
   condition: []
   action:
@@ -752,7 +715,7 @@
     domain: switch
   mode: single
 - id: '1635958341713'
-  alias: Garage / Light Timer Finished
+  alias: X Garage / Light Timer Finished
   description: ''
   trigger:
   - platform: event
@@ -767,7 +730,7 @@
     domain: switch
   mode: single
 - id: '1635958831865'
-  alias: Garage / Light Switch On
+  alias: X Garage / Light Switch On
   description: ''
   trigger:
   - platform: device
@@ -779,12 +742,12 @@
   action:
   - service: timer.start
     data:
-      duration: 00:10:00
+      duration: 00:20:00
     target:
       entity_id: timer.garage_light_out_timer
   mode: single
 - id: '1636176384486'
-  alias: Living Room / Lamp Control (Mantle 2x)
+  alias: X Living Room / Lamp Control
   description: ''
   trigger:
   - platform: event
@@ -793,6 +756,12 @@
       device_id: 97ba41cc94f8d9a4f0f9c9c4c33617db
       command_class: 91
       value: KeyPressed2x
+  - platform: event
+    event_type: zwave_js_value_notification
+    event_data:
+      device_id: 97ba41cc94f8d9a4f0f9c9c4c33617db
+      command_class: 91
+      value: KeyHeldDown
   condition: []
   action:
   - type: toggle
@@ -800,32 +769,8 @@
     entity_id: light.smart_plug_dimmer
     domain: light
   mode: single
-- id: '1636931921244'
-  alias: Location / Katie Back Home
-  description: ''
-  trigger:
-  - platform: state
-    entity_id: person.katie
-    to: home
-  condition: []
-  action: []
-  mode: single
-- id: '1637536786800'
-  alias: Christmas / Outside Lights On
-  description: ''
-  trigger:
-  - platform: sun
-    event: sunset
-    offset: -00:30:00
-  condition: []
-  action:
-  - type: turn_on
-    device_id: fef3bf6053aa6bf56ab10d2ad40db72c
-    entity_id: switch.battery_charger_on_off
-    domain: switch
-  mode: single
 - id: '1637548318994'
-  alias: Douple Tap / Dimmer Switch Up
+  alias: X Douple Tap / Dimmer Switch Up
   description: ''
   trigger:
   - platform: event
@@ -843,7 +788,7 @@
       device_id: '{{trigger.event.data.device_id}}'
   mode: single
 - id: '1637548506196'
-  alias: Douple Tap / Dimmer Switch Down
+  alias: X Douple Tap / Dimmer Switch Down
   description: ''
   trigger:
   - platform: event
@@ -860,8 +805,587 @@
     target:
       device_id: '{{trigger.event.data.device_id}}'
   mode: single
-- id: '1637631088763'
-  alias: Christmas / All Lights Off
+- id: '1638244888658'
+  alias: X Living Room / Fireplace Fan
+  description: ''
+  trigger:
+  - platform: device
+    type: turned_on
+    device_id: dc6809bfbb40dd807ac744a4847e930f
+    entity_id: switch.multirelay_2
+    domain: switch
+    id: fireplace-on
+  - platform: device
+    type: turned_off
+    device_id: dc6809bfbb40dd807ac744a4847e930f
+    entity_id: switch.multirelay_2
+    domain: switch
+    id: fireplace-off
+  condition: []
+  action:
+  - delay:
+      hours: 0
+      minutes: 5
+      seconds: 0
+      milliseconds: 0
+  - choose:
+    - conditions:
+      - condition: trigger
+        id: fireplace-on
+      sequence:
+      - type: turn_on
+        device_id: dc6809bfbb40dd807ac744a4847e930f
+        entity_id: switch.multirelay_2_2
+        domain: switch
+    - conditions:
+      - condition: trigger
+        id: fireplace-off
+      sequence:
+      - type: turn_off
+        device_id: dc6809bfbb40dd807ac744a4847e930f
+        entity_id: switch.multirelay_2_2
+        domain: switch
+    default: []
+  mode: restart
+- id: '1638503605462'
+  alias: X Basement / Side Light Switch On
+  description: ''
+  trigger:
+  - platform: device
+    type: turned_on
+    device_id: 24ac4d037a2409175364f29aeadb73f3
+    entity_id: light.in_wall_smart_dimmer_2
+    domain: light
+  condition: []
+  action:
+  - type: turn_on
+    device_id: 4b35e304f1192aae17926aa9cb6f426b
+    entity_id: switch.in_wall_smart_switch
+    domain: switch
+  - service: timer.start
+    data:
+      duration: 00:30:00
+    target:
+      entity_id: timer.basement_lights_out_timer
+  mode: restart
+- id: '1638590942861'
+  alias: X Office / Lamp Control
+  description: ''
+  trigger:
+  - platform: event
+    event_type: zwave_js_value_notification
+    event_data:
+      device_id: 5a056c854e8517b309356ed16e208b52
+      command_class: 91
+      value: KeyPressed2x
+  - platform: event
+    event_type: zwave_js_value_notification
+    event_data:
+      device_id: 5a056c854e8517b309356ed16e208b52
+      command_class: 91
+      value: KeyHeldDown
+  condition: []
+  action:
+  - type: toggle
+    device_id: cd0c1f398df34a477a0b070bd5af23d2
+    entity_id: switch.ewelink_sa_003_zigbee_659cea22_on_off
+    domain: switch
+  mode: single
+- id: '1638716387140'
+  alias: Location Arrive Home / Greet
+  description: ''
+  trigger:
+  - type: opened
+    platform: device
+    device_id: 551ad5997e0f71b6ae14b85ef4f5c44d
+    entity_id: 2ea6ef39c38a25da6cf96dcb2be58ce3
+    domain: binary_sensor
+  - type: opened
+    platform: device
+    device_id: dad37d52a286fbdc55e47440f606175f
+    entity_id: 192caa7a52c53861796959848941bf13
+    domain: binary_sensor
+  condition:
+  - condition: device
+    device_id: e222f4faff9920573b5ff6d59236657a
+    domain: alarm_control_panel
+    entity_id: 40b6b02264dc060346c6209a80a0f85a
+    type: is_armed_away
+  action:
+  - wait_for_trigger:
+    - platform: device
+      device_id: e222f4faff9920573b5ff6d59236657a
+      domain: alarm_control_panel
+      entity_id: 40b6b02264dc060346c6209a80a0f85a
+      type: disarmed
+    continue_on_timeout: false
+    timeout: 05:00
+  - condition: time
+    before: '20:30:00'
+    after: 08:00:00
+  - service: script.back_home_greeting
+    data: {}
+  mode: single
+- id: '1639521675599'
+  alias: X Hall / Motion
+  description: ''
+  trigger:
+  - type: motion
+    platform: device
+    device_id: 6eeac6f9af7a0df2fdd88ab3977b0ce7
+    entity_id: binary_sensor.motion
+    domain: binary_sensor
+  condition: []
+  action:
+  - service: timer.start
+    data:
+      duration: 00:10:00
+    target:
+      entity_id: timer.hall_light_out_timer
+  mode: single
+- id: '1639521744551'
+  alias: X Hall / Light Timer Finished
+  description: ''
+  trigger:
+  - platform: event
+    event_type: timer.finished
+    event_data:
+      entity_id: timer.hall_light_out_timer
+  condition: []
+  action:
+  - type: turn_off
+    device_id: efdc82e37df9b4f347ab5dcae331de12
+    entity_id: switch.in_wall_smart_switch_6
+    domain: switch
+  - type: turn_off
+    device_id: ab4f34765b80e4019097e19bcc258116
+    entity_id: light.in_wall_smart_dimmer_6
+    domain: light
+  mode: single
+- id: '1641096236327'
+  alias: X Basement / (Accessory) Switch On (Long)
+  description: ''
+  trigger:
+  - platform: event
+    event_type: zwave_js_value_notification
+    event_data:
+      device_id: 4b35e304f1192aae17926aa9cb6f426b
+      command_class: 91
+      property_key: '001'
+      value: KeyReleased
+  - platform: event
+    event_type: zwave_js_value_notification
+    event_data:
+      device_id: 64f8098a908852b391404adf666dd554
+      command_class: 91
+      property_key: '001'
+      value: KeyReleased
+  condition: []
+  action:
+  - type: turn_on
+    device_id: 64f8098a908852b391404adf666dd554
+    entity_id: light.in_wall_smart_dimmer_3
+    domain: light
+    brightness_pct: 100
+  - type: turn_on
+    device_id: 24ac4d037a2409175364f29aeadb73f3
+    entity_id: light.in_wall_smart_dimmer_2
+    domain: light
+    brightness_pct: 100
+  mode: single
+- id: '1641096281294'
+  alias: X Basement / (Accessory) Switch Off (Long)
+  description: ''
+  trigger:
+  - platform: event
+    event_type: zwave_js_value_notification
+    event_data:
+      device_id: 4b35e304f1192aae17926aa9cb6f426b
+      command_class: 91
+      property_key: '002'
+      value: KeyReleased
+  - platform: event
+    event_type: zwave_js_value_notification
+    event_data:
+      device_id: 64f8098a908852b391404adf666dd554
+      command_class: 91
+      property_key: '002'
+      value: KeyReleased
+  condition: []
+  action:
+  - type: turn_off
+    device_id: 64f8098a908852b391404adf666dd554
+    entity_id: light.in_wall_smart_dimmer_3
+    domain: light
+  - type: turn_off
+    device_id: 24ac4d037a2409175364f29aeadb73f3
+    entity_id: light.in_wall_smart_dimmer_2
+    domain: light
+  mode: single
+- id: '1641099345688'
+  alias: X Basement / Accessory Switch Off (2x)
+  description: ''
+  trigger:
+  - platform: event
+    event_type: zwave_js_value_notification
+    event_data:
+      device_id: 4b35e304f1192aae17926aa9cb6f426b
+      command_class: 91
+      property_key: '002'
+      value: KeyPressed2x
+  condition: []
+  action:
+  - service: light.turn_on
+    target:
+      entity_id: light.in_wall_smart_dimmer_2
+    data:
+      brightness_pct: 25
+  mode: single
+- id: '1641099582980'
+  alias: X Basement / Accessory Switch On (2x)
+  description: ''
+  trigger:
+  - platform: event
+    event_type: zwave_js_value_notification
+    event_data:
+      device_id: 4b35e304f1192aae17926aa9cb6f426b
+      command_class: 91
+      property_key: '001'
+      value: KeyPressed2x
+  condition: []
+  action:
+  - type: turn_on
+    device_id: 24ac4d037a2409175364f29aeadb73f3
+    entity_id: light.in_wall_smart_dimmer_2
+    domain: light
+    brightness_pct: 100
+  mode: single
+- id: '1644706603481'
+  alias: X Basement / Accessory Switch Off
+  description: ''
+  trigger:
+  - platform: device
+    type: turned_off
+    device_id: 4b35e304f1192aae17926aa9cb6f426b
+    entity_id: switch.in_wall_smart_switch
+    domain: switch
+  condition: []
+  action:
+  - type: turn_off
+    device_id: 24ac4d037a2409175364f29aeadb73f3
+    entity_id: light.in_wall_smart_dimmer_2
+    domain: light
+  mode: single
+- id: '1644706714981'
+  alias: X Basement / Side Light Switch Off
+  description: ''
+  trigger:
+  - platform: device
+    type: turned_off
+    device_id: 24ac4d037a2409175364f29aeadb73f3
+    entity_id: light.in_wall_smart_dimmer_2
+    domain: light
+  condition: []
+  action:
+  - type: turn_off
+    device_id: 4b35e304f1192aae17926aa9cb6f426b
+    entity_id: switch.in_wall_smart_switch
+    domain: switch
+  mode: restart
+- id: '1644713210521'
+  alias: X Master / Lamp Control
+  description: ''
+  trigger:
+  - platform: event
+    event_type: zwave_js_value_notification
+    event_data:
+      device_id: 03e17b39050bbd6e90e52e7b486de2a1
+      command_class: 91
+      value: KeyPressed2x
+  - platform: event
+    event_type: zwave_js_value_notification
+    event_data:
+      device_id: 03e17b39050bbd6e90e52e7b486de2a1
+      command_class: 91
+      value: KeyHeldDown
+  condition: []
+  action:
+  - type: toggle
+    device_id: 60ca0ed8bea174da02e6b3d2c293529e
+    entity_id: switch.bradys_lamp_lights_on_off
+    domain: switch
+  - type: toggle
+    device_id: a4c8593ca29d017a4bff84e6550addc2
+    entity_id: switch.katie_lamp
+    domain: switch
+  mode: single
+- id: '1644730603818'
+  alias: Phone Charging Katie / Prepare for Sleep
+  description: ''
+  trigger:
+  - type: plugged_in
+    platform: device
+    device_id: 0256cc3a60db9a4a460af8d2f2cdc7e3
+    entity_id: binary_sensor.katie_pixel_4a_is_charging
+    domain: binary_sensor
+  condition:
+  - condition: state
+    entity_id: person.katie
+    state: home
+  - condition: time
+    after: '21:00:00'
+    before: 02:00:00
+  action:
+  - type: turn_off
+    device_id: a4c8593ca29d017a4bff84e6550addc2
+    entity_id: switch.katie_lamp
+    domain: switch
+  mode: single
+- id: '1645071998086'
+  alias: Phone Charging Brady / Prepare for Sleep
+  description: ''
+  trigger:
+  - platform: state
+    entity_id:
+    - sensor.bradys_iphone_battery_state
+    to: Charging
+  condition:
+  - condition: state
+    entity_id: person.brady
+    state: home
+  - condition: time
+    after: '21:00:00'
+    before: 02:00:00
+  action:
+  - type: turn_off
+    device_id: 60ca0ed8bea174da02e6b3d2c293529e
+    entity_id: switch.bradys_lamp_lights_on_off
+    domain: switch
+  - type: turn_on
+    device_id: f59e804d4149adc72e3abaa49f0cad5c
+    entity_id: switch.ewelink_sa_003_zigbee_57fad522_on_off
+    domain: switch
+  mode: single
+- id: '1645072242287'
+  alias: X Living Room / TV Turned Off at Night
+  description: ''
+  trigger:
+  - platform: device
+    type: turned_off
+    device_id: 373283655e2e29f5a248337c3d0d4a07
+    entity_id: 90c4ffc691062c4fac18c56c90ba0fcf
+    domain: switch
+  condition:
+  - condition: time
+    after: '21:30:00'
+    before: 00:00:00
+  - condition: state
+    entity_id: group.presence_home
+    state: home
+  - condition: not
+    conditions:
+    - type: is_plugged_in
+      condition: device
+      device_id: 0256cc3a60db9a4a460af8d2f2cdc7e3
+      entity_id: binary_sensor.katie_pixel_4a_is_charging
+      domain: binary_sensor
+    - condition: state
+      entity_id: sensor.bradys_iphone_battery_state
+      state: Charging
+  action:
+  - scene: scene.adult_bedtime
+  mode: single
+- id: '1648222020722'
+  alias: Switch Momentary Off / Turn On After 30s
+  description: ''
+  trigger:
+  - platform: state
+    entity_id:
+    - switch.printer_switch
+    to: 'off'
+  condition: []
+  action:
+  - delay:
+      hours: 0
+      minutes: 0
+      seconds: 30
+      milliseconds: 0
+  - service: switch.turn_on
+    target:
+      entity_id: '{{ trigger.to_state.entity_id }}'
+  mode: parallel
+  max: 10
+- id: '1654020294941'
+  alias: X Reminder / Piano Lesson
+  description: ''
+  trigger:
+  - platform: time
+    at: '15:30:00'
+  condition:
+  - condition: time
+    before: 00:00:00
+    weekday:
+    - tue
+    after: 00:00:00
+  action:
+  - service: rest_command.assistant_broadcast
+    data:
+      command: Kayla your piano lesson starts in thirty minutes
+  - wait_for_trigger:
+    - platform: time
+      at: '15:55:00'
+    continue_on_timeout: false
+    timeout: 01:00:00
+  - service: rest_command.assistant_broadcast
+    data:
+      command: Kayla your piano lesson starts in five minutes so please go set up
+        and login to prepare
+  mode: restart
+- id: '1654044497686'
+  alias: X Reminder / Summer Day
+  description: ''
+  trigger:
+  - platform: time
+    at: 08:45:00
+  condition:
+  - condition: time
+    weekday:
+    - tue
+    - mon
+    - wed
+    - thu
+    before: 00:00:00
+    after: 00:00:00
+  action:
+  - service: rest_command.assistant_broadcast
+    data:
+      command: Good morning kiddos!  Please make your bed get dressed and come up
+        for breakfast
+  mode: restart
+- id: '1657717902854'
+  alias: X Back Door / Left Open
+  description: ''
+  trigger:
+  - type: opened
+    platform: device
+    device_id: 7d9ae9991257c57b80877576d43d88a6
+    entity_id: binary_sensor.back_door
+    domain: binary_sensor
+    for:
+      hours: 0
+      minutes: 5
+      seconds: 0
+  condition:
+  - condition: device
+    device_id: 63d3bbd0a41e453a8732a7119093e631
+    domain: climate
+    entity_id: climate.main_thermostat
+    type: is_hvac_mode
+    hvac_mode: cool
+  action:
+  - device_id: 63d3bbd0a41e453a8732a7119093e631
+    domain: climate
+    entity_id: climate.main_thermostat
+    type: set_hvac_mode
+    hvac_mode: 'off'
+  - service: tts.google_say
+    data:
+      message: The air conditioner will be turned off because the back door has been
+        open for 5 minutes.
+      entity_id: media_player.hub
+  mode: restart
+- id: '1660310996546'
+  alias: At Wake Kayla 7:20 AM / Get Ready for School
+  description: ''
+  trigger:
+  - platform: time
+    at: 07:20:00
+  condition:
+  - condition: time
+    weekday:
+    - mon
+    - tue
+    - wed
+    - thu
+    - fri
+    before: 00:00:00
+    after: 00:00:00
+  - condition: state
+    entity_id: input_boolean.no_school_tomorrow_mode
+    state: 'off'
+  action:
+  - service: script.turn_on
+    target:
+      entity_id: script.media_soft_volume
+    data: {}
+  - delay:
+      hours: 0
+      minutes: 0
+      seconds: 5
+      milliseconds: 0
+  - service: google_assistant_sdk.send_text_command
+    data:
+      command: broadcast to Kayla's Room Good morning Kayla
+  - service: spotcast.start
+    continue_on_error: true
+    data:
+      uri: spotify:playlist:03qN71KVyjqh02ZiOKSRew
+      device_name: Kayla’s Room
+  - wait_for_trigger:
+    - platform: time
+      at: 08:10:00
+    continue_on_timeout: false
+    timeout: 01:00:00
+  - service: google_assistant_sdk.send_text_command
+    data:
+      command: broadcast to Kayla's Room Kayla you need to leave for school in 5 minutes
+  - wait_for_trigger:
+    - platform: time
+      at: 08:15:00
+    continue_on_timeout: false
+    timeout: 01:00:00
+  - service: google_assistant_sdk.send_text_command
+    data:
+      command: broadcast to Kayla's Room Kayla you need to leave for school
+  mode: restart
+- id: '1669247888195'
+  alias: X Christmas Outside Lights On
+  description: ''
+  trigger:
+  - platform: sun
+    event: sunset
+    offset: 0
+  condition: []
+  action:
+  - type: turn_on
+    device_id: fef3bf6053aa6bf56ab10d2ad40db72c
+    entity_id: switch.battery_charger_on_off
+    domain: switch
+  - type: turn_on
+    device_id: 95ff756700a78f74282908f71a00f005
+    entity_id: switch.ewelink_sa_003_zigbee_switch
+    domain: switch
+  mode: single
+- id: '1669589717989'
+  alias: X Christmas Inside Lights On
+  description: ''
+  trigger:
+  - platform: sun
+    event: sunset
+    offset: 0
+  condition: []
+  action:
+  - type: turn_on
+    device_id: 0049e136d9ce054684048bc48adf949f
+    entity_id: switch.aux_switch_3_switch_2
+    domain: switch
+  - type: turn_on
+    device_id: f4c9fcf9fbcfc0e2db6d11e997276e5a
+    entity_id: switch.aux_switch_2_switch_2
+    domain: switch
+  mode: single
+- id: '1669648692685'
+  alias: X Christmas Lights Off
   description: ''
   trigger:
   - platform: time
@@ -873,219 +1397,192 @@
     entity_id: switch.battery_charger_on_off
     domain: switch
   - type: turn_off
-    device_id: 60ca0ed8bea174da02e6b3d2c293529e
-    entity_id: switch.christmas_tree_lights_on_off
+    device_id: 95ff756700a78f74282908f71a00f005
+    entity_id: switch.ewelink_sa_003_zigbee_switch
     domain: switch
   - type: turn_off
-    device_id: a4c8593ca29d017a4bff84e6550addc2
-    entity_id: switch.buffet_lights_on_off
+    device_id: f4c9fcf9fbcfc0e2db6d11e997276e5a
+    entity_id: switch.aux_switch_2_switch_2
+    domain: switch
+  - type: turn_off
+    device_id: 0049e136d9ce054684048bc48adf949f
+    entity_id: switch.aux_switch_3_switch_2
     domain: switch
   mode: single
-- id: '1638229624292'
-  alias: Christmas / Inside Lights Off When Katie Not Home
+- id: '1675779507071'
+  alias: Button No School Tomorrow On / Turn Off After 30h
   description: ''
   trigger:
   - platform: state
-    entity_id: person.katie
-    to: not_home
-  condition: []
-  action:
-  - type: turn_off
-    device_id: 60ca0ed8bea174da02e6b3d2c293529e
-    entity_id: switch.christmas_tree_lights_on_off
-    domain: switch
-  - type: turn_off
-    device_id: a4c8593ca29d017a4bff84e6550addc2
-    entity_id: switch.buffet_lights_on_off
-    domain: switch
-  mode: single
-- id: '1638229733484'
-  alias: Christmas / Inside Lights On In Morning
-  description: ''
-  trigger:
-  - platform: time
-    at: 07:30:00
-  condition:
-  - condition: state
-    entity_id: group.presence_home
-    state: home
-  action:
-  - type: turn_on
-    device_id: 60ca0ed8bea174da02e6b3d2c293529e
-    entity_id: switch.christmas_tree_lights_on_off
-    domain: switch
-  - type: turn_on
-    device_id: a4c8593ca29d017a4bff84e6550addc2
-    entity_id: switch.buffet_lights_on_off
-    domain: switch
-  mode: single
-- id: '1638229815839'
-  alias: Christmas / Inside Lights On When Katie Back Home
-  description: ''
-  trigger:
-  - platform: state
-    entity_id: person.katie
-    to: home
-  condition:
-  - condition: time
-    before: '22:30:00'
-  action:
-  - type: turn_on
-    device_id: 60ca0ed8bea174da02e6b3d2c293529e
-    entity_id: switch.christmas_tree_lights_on_off
-    domain: switch
-  - type: turn_on
-    device_id: a4c8593ca29d017a4bff84e6550addc2
-    entity_id: switch.buffet_lights_on_off
-    domain: switch
-  mode: single
-- id: '1638244888658'
-  alias: Living Room / Fireplace Fan On
-  description: ''
-  trigger:
-  - platform: device
-    type: turned_on
-    device_id: dc6809bfbb40dd807ac744a4847e930f
-    entity_id: switch.multirelay_2
-    domain: switch
+    entity_id:
+    - input_boolean.no_school_tomorrow_mode
+    to: 'on'
   condition: []
   action:
   - delay:
-      hours: 0
-      minutes: 5
-      seconds: 0
-      milliseconds: 0
-  - type: turn_on
-    device_id: dc6809bfbb40dd807ac744a4847e930f
-    entity_id: switch.multirelay_2_2
-    domain: switch
-  mode: single
-- id: '1638244931892'
-  alias: Living Room / Fireplace Fan Off
-  description: ''
-  trigger:
-  - platform: device
-    type: turned_off
-    device_id: dc6809bfbb40dd807ac744a4847e930f
-    entity_id: switch.multirelay_2
-    domain: switch
-    for:
-      hours: 0
+      hours: 30
       minutes: 0
       seconds: 0
       milliseconds: 0
+  - service: input_boolean.turn_off
+    data: {}
+    target:
+      entity_id: input_boolean.no_school_tomorrow_mode
+  mode: single
+- id: '1693191715115'
+  alias: Location Kids at School / Set Upstairs Thermostat Away
+  description: ''
+  trigger:
+  - platform: time
+    at: 07:45:00
+  condition:
+  - condition: time
+    weekday:
+    - mon
+    - tue
+    - wed
+    - thu
+    - fri
+  action:
+  - device_id: 852e37b9f21f018aff200d7c20154842
+    domain: select
+    entity_id: ac0ad92e47201489e0e74236132beb98
+    type: select_option
+    option: away
+  mode: single
+- id: '1693192215914'
+  alias: Location Arrive Home / Set Main Thermostat Home
+  description: ''
+  trigger:
+  - platform: state
+    to: home
+    entity_id: person.brady
+  - platform: state
+    entity_id: person.katie
+    to: home
   condition: []
   action:
+  - device_id: 58534ff267e607630e2cd888fba3175e
+    domain: select
+    entity_id: cd059104230284b95d9b93c4f37c23d9
+    type: select_option
+    option: home
+  mode: single
+- id: '1693343082002'
+  alias: Location Katie Home / Set Upstairs Thermostat Home
+  description: ''
+  trigger:
+  - platform: state
+    entity_id:
+    - person.katie
+    to: home
+  condition:
+  - condition: or
+    conditions:
+    - condition: time
+      after: '15:00:00'
+      weekday:
+      - mon
+      - tue
+      - fri
+      - thu
+      - wed
+    - condition: time
+      weekday:
+      - sat
+      - sun
+  action:
+  - device_id: 852e37b9f21f018aff200d7c20154842
+    domain: select
+    entity_id: ac0ad92e47201489e0e74236132beb98
+    type: select_option
+    option: home
+  mode: single
+- id: '1697339477217'
+  alias: Charger Yard Tool Battery On / Off When Charged
+  description: ''
+  trigger:
+  - platform: device
+    type: turned_on
+    device_id: 11a53d50efc39b2800c8bfae061b90d7
+    entity_id: 590ab119f14d47649be6f34fd911c9de
+    domain: switch
+    for:
+      hours: 0
+      minutes: 20
+      seconds: 0
+  condition: []
+  action:
+  - wait_template: '{{ states("sensor.battery_charger_electrical_measurement") | float
+      < 2.5 and as_timestamp(states.sensor.battery_charger_electrical_measurement.last_updated)
+      is defined }}'
+    timeout: 06:00:00
+    continue_on_timeout: true
+  - type: turn_off
+    device_id: 11a53d50efc39b2800c8bfae061b90d7
+    entity_id: 590ab119f14d47649be6f34fd911c9de
+    domain: switch
+  mode: restart
+- id: '1698379631581'
+  alias: Doorbell Ring or Motion / Turn on Porch Lights
+  description: ''
+  trigger:
+  - platform: device
+    device_id: 4b31cd0af04199f62e0e5a783ebc8a18
+    domain: nest
+    type: doorbell_chime
+  - platform: device
+    device_id: 4b31cd0af04199f62e0e5a783ebc8a18
+    domain: nest
+    type: camera_person
+  condition:
+  - condition: sun
+    after: sunset
+    after_offset: -00:15:00
+  action:
+  - type: turn_on
+    device_id: 4c87470a2e6cfba10ed8bb4018b4e791
+    entity_id: adb74d262ec557703447d01ad1d8cfed
+    domain: switch
   - delay:
       hours: 0
-      minutes: 5
+      minutes: 10
       seconds: 0
       milliseconds: 0
   - type: turn_off
-    device_id: dc6809bfbb40dd807ac744a4847e930f
-    entity_id: switch.multirelay_2_2
+    device_id: 4c87470a2e6cfba10ed8bb4018b4e791
+    entity_id: adb74d262ec557703447d01ad1d8cfed
     domain: switch
-  mode: single
-- id: '1638503605462'
-  alias: Basement / Side Light Switch On
+  mode: restart
+- id: '1698437882347'
+  alias: Alarm Disarmed / Turn Off Siren
   description: ''
   trigger:
   - platform: device
-    type: turned_on
-    device_id: 24ac4d037a2409175364f29aeadb73f3
-    entity_id: light.in_wall_smart_dimmer_2
-    domain: light
+    device_id: e222f4faff9920573b5ff6d59236657a
+    domain: alarm_control_panel
+    entity_id: 40b6b02264dc060346c6209a80a0f85a
+    type: disarmed
   condition: []
   action:
-  - service: timer.start
-    data:
-      duration: 00:10:00
-    target:
-      entity_id: timer.basement_lights_out_timer
-  mode: restart
-- id: '1638590942861'
-  alias: Office / Lamp Switch Control
+  - type: turn_off
+    device_id: bb21c77f29c4e565c693d9b1dd1b9702
+    entity_id: 697394d506e4ad4259e348af1853a304
+    domain: switch
+  mode: single
+- id: '1698613023826'
+  alias: Button Patio Lights Switch On or Off / Toggle Lights
   description: ''
   trigger:
   - platform: device
-    type: turned_on
-    device_id: 5a056c854e8517b309356ed16e208b52
-    entity_id: switch.in_wall_smart_switch_5
-    domain: switch
-  - platform: device
-    type: turned_off
-    device_id: 5a056c854e8517b309356ed16e208b52
-    entity_id: switch.in_wall_smart_switch_5
+    type: changed_states
+    device_id: 212b9fd660bd1651d991b0814b652a82
+    entity_id: 24eb09ac51e9ccd4b995799c433b7e89
     domain: switch
   condition: []
   action:
   - type: toggle
-    device_id: cd0c1f398df34a477a0b070bd5af23d2
-    entity_id: switch.ewelink_sa_003_zigbee_659cea22_on_off
+    device_id: c19e49ca74ea2eff44bc524931d8df93
+    entity_id: 87c37cbc55fd52bf3cb529a381bed0db
     domain: switch
-  - choose:
-    - conditions:
-      - condition: device
-        type: is_off
-        device_id: cd0c1f398df34a477a0b070bd5af23d2
-        entity_id: switch.ewelink_sa_003_zigbee_659cea22_on_off
-        domain: switch
-      sequence:
-      - type: turn_off
-        device_id: 5a056c854e8517b309356ed16e208b52
-        entity_id: switch.in_wall_smart_switch_5
-        domain: switch
-    default:
-    - type: turn_on
-      device_id: 5a056c854e8517b309356ed16e208b52
-      entity_id: switch.in_wall_smart_switch_5
-      domain: switch
-  mode: single
-- id: '1638716387140'
-  alias: Location / Arrival While Armed Away
-  description: ''
-  trigger:
-  - type: opened
-    platform: device
-    device_id: 3b372b79fd79c2eb03a3cf1e3a41ea2d
-    entity_id: binary_sensor.garage_entry_door
-    domain: binary_sensor
-  - type: opened
-    platform: device
-    device_id: 964dec18ae5e8f23081f28f6479b8897
-    entity_id: binary_sensor.front_door
-    domain: binary_sensor
-  condition:
-  - condition: device
-    device_id: 5de0014dbd651a0ab324fb0169a472d8
-    domain: alarm_control_panel
-    entity_id: alarm_control_panel.lyricaiod74830
-    type: is_armed_away
-  action:
-  - choose:
-    - conditions:
-      - condition: sun
-        after: sunset
-        before_offset: 00:15:00
-      sequence:
-      - type: turn_on
-        device_id: 932eba2938436d33f5fc7d8d1d706292
-        entity_id: switch.in_wall_smart_switch_3
-        domain: switch
-      - type: turn_on
-        device_id: efdc82e37df9b4f347ab5dcae331de12
-        entity_id: switch.in_wall_smart_switch_6
-        domain: switch
-    default: []
-  - wait_for_trigger:
-    - platform: device
-      device_id: 5de0014dbd651a0ab324fb0169a472d8
-      domain: alarm_control_panel
-      entity_id: alarm_control_panel.lyricaiod74830
-      type: disarmed
-    continue_on_timeout: false
-    timeout: 05:00
-  - condition: time
-    before: '20:30:00'
-  - service: script.back_home_greeting
   mode: single

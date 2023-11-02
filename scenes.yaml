@@ -2,80 +2,95 @@
   name: Everything Off
   entities:
     switch.multirelay:
-      friendly_name: Fireplace Multirelay Global Switch
       icon: mdi:dip-switch
+      friendly_name: Fireplace Multirelay Global Switch
       state: 'off'
     light.in_wall_smart_dimmer_3:
       supported_color_modes:
       - brightness
-      friendly_name: Basement Light
       icon: mdi:movie-open
+      friendly_name: Basement Light
       supported_features: 32
       state: 'off'
     light.in_wall_smart_dimmer_2:
       supported_color_modes:
       - brightness
-      friendly_name: Basement Side Light
       icon: mdi:hockey-puck
+      friendly_name: Basement Side Light
       supported_features: 32
       state: 'off'
     light.in_wall_smart_dimmer:
       supported_color_modes:
       - brightness
-      friendly_name: Dining Room Light
       icon: mdi:food-turkey
+      friendly_name: Dining Room Light
       supported_features: 32
       state: 'off'
     switch.switch_7:
-      friendly_name: Garage Light
       icon: hass:lightbulb
+      friendly_name: Garage Light
       state: 'off'
     switch.in_wall_smart_switch_3:
-      friendly_name: Living Room Overhead Light
       icon: mdi:ceiling-fan-light
+      friendly_name: Living Room Overhead Light
       state: 'off'
     switch.in_wall_smart_switch_2:
-      friendly_name: Mantle Light
       icon: mdi:image
+      friendly_name: Mantle Light
       state: 'off'
     light.in_wall_smart_dimmer_5:
       supported_color_modes:
       - brightness
-      friendly_name: Nook Light
       icon: mdi:food
+      friendly_name: Nook Light
       supported_features: 32
       state: 'off'
     light.in_wall_smart_dimmer_4:
       supported_color_modes:
       - brightness
-      friendly_name: Kitchen Overhead Light
       icon: mdi:fridge
+      friendly_name: Kitchen Overhead Light
       supported_features: 32
       state: 'off'
     switch.tv:
-      friendly_name: TV
       icon: mdi:television
+      friendly_name: TV
       state: 'off'
     light.smart_plug_dimmer:
       supported_color_modes:
       - brightness
-      friendly_name: Living Room Lamp
       icon: mdi:floor-lamp
+      friendly_name: Living Room Lamp
       supported_features: 32
       state: 'off'
     switch.in_wall_smart_switch_5:
-      friendly_name: Office Lamp Switch
+      friendly_name: Office Overhead Light
       state: 'off'
     light.in_wall_smart_dimmer_6:
       supported_color_modes:
       - brightness
-      friendly_name: Stairwell Overhead Light
       icon: mdi:stairs
+      friendly_name: Stairwell Overhead Light
       supported_features: 32
       state: 'off'
     switch.in_wall_smart_switch_6:
-      friendly_name: Central Hall Light
       icon: mdi:light-recessed
+      friendly_name: Central Hall Light
+      state: 'off'
+    switch.ewelink_sa_003_zigbee_659cea22_on_off:
+      friendly_name: Office Lamp
+      state: 'off'
+    switch.bradys_lamp_lights_on_off:
+      icon: mdi:lamp
+      friendly_name: Brady's Lamp
+      state: 'off'
+    switch.katie_lamp:
+      icon: mdi:lamp
+      friendly_name: Katie's Lamp
+      state: 'off'
+    switch.master_overhead_light_7:
+      icon: mdi:ceiling-fan-light
+      friendly_name: Master Overhead Light
       state: 'off'
   icon: mdi:home-export-outline
 - id: '1630269454705'
@@ -172,6 +187,10 @@
       icon: mdi:stairs
       supported_features: 32
       state: 'off'
+    switch.in_wall_smart_switch_6:
+      friendly_name: Central Hall Light
+      icon: mdi:light-recessed
+      state: 'off'
   icon: mdi:television
 - id: '1630384475620'
   name: Kids Bedtime
@@ -241,3 +260,77 @@
       icon: mdi:light-recessed
       state: 'on'
   icon: mdi:shield-home
+- id: '1639842194399'
+  name: Dimmers 100%
+  entities:
+    light.in_wall_smart_dimmer_5:
+      supported_color_modes:
+      - brightness
+      color_mode: brightness
+      brightness: 255
+      friendly_name: Nook Light
+      icon: mdi:food
+      supported_features: 32
+      state: 'on'
+    light.in_wall_smart_dimmer_4:
+      supported_color_modes:
+      - brightness
+      color_mode: brightness
+      brightness: 255
+      friendly_name: Kitchen Overhead Light
+      icon: mdi:fridge
+      supported_features: 32
+      state: 'on'
+    light.in_wall_smart_dimmer:
+      supported_color_modes:
+      - brightness
+      color_mode: brightness
+      brightness: 255
+      friendly_name: Dining Room Light
+      icon: mdi:food-turkey
+      supported_features: 32
+      state: 'on'
+    light.in_wall_smart_dimmer_6:
+      supported_color_modes:
+      - brightness
+      color_mode: brightness
+      brightness: 255
+      friendly_name: Stairwell Overhead Light
+      icon: mdi:stairs
+      supported_features: 32
+      state: 'on'
+    light.in_wall_smart_dimmer_3:
+      supported_color_modes:
+      - brightness
+      color_mode: brightness
+      brightness: 255
+      friendly_name: Basement Light
+      icon: mdi:movie-open
+      supported_features: 32
+      state: 'on'
+    light.in_wall_smart_dimmer_2:
+      supported_color_modes:
+      - brightness
+      color_mode: brightness
+      brightness: 255
+      friendly_name: Basement Side Light
+      icon: mdi:hockey-puck
+      supported_features: 32
+      state: 'on'
+- id: '1645072337116'
+  name: Adult Prepare for Bedtime
+  entities:
+    switch.bradys_lamp_lights_on_off:
+      icon: mdi:lamp
+      friendly_name: Brady's Lamp
+      state: 'on'
+    switch.katie_lamp:
+      icon: mdi:lamp
+      friendly_name: Katie's Lamp
+      state: 'on'
+    switch.master_overhead_light_7:
+      icon: mdi:ceiling-fan-light
+      friendly_name: Master Overhead Light
+      state: 'off'
+  icon: mdi:bed
+  metadata: {}

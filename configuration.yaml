@@ -27,9 +27,11 @@ homeassistant:
   name: Home
   latitude: !secret latitude
   longitude: !secret longitude
-  elevation: 6500
+  elevation: 500
   unit_system: imperial
-  time_zone: America/Denver
+  time_zone: America/Chicago
+  currency: USD
+  country: US
   external_url: !secret external_url
   packages: !include_dir_named packages
 
@@ -92,37 +94,11 @@ tts:
     cache: true
     cache_dir: /tmp/tts
     time_memory: 300
-    base_url: !secret external_url
     service_name: google_say
 
-# Assistant Relay
-rest_command:
-  assistant_broadcast:
-    url: http://192.168.1.28:3000/assistant
-    method: POST
-    content_type: "application/json"
-    payload: '{"command":"{{ command }}", "user":"brady", "broadcast":true}'
-  assistant_relay:
-    url: http://192.168.1.28:3000/assistant
-    method: POST
-    content_type: "application/json"
-    payload: '{"command":"{{ command }}", "user":"brady"}'
-
-spotify:
-  client_id: !secret spotify_client_id
-  client_secret: !secret spotify_client_secret
-
 spotcast:
-  sp_dc: !secret spotcast_sp_dc
-  sp_key: !secret spotcast_sp_key
-
-nest:
-  client_id: !secret nest_client_id
-  client_secret: !secret nest_client_secret
-  # "Project ID" in the Device Access Console
-  project_id: !secret nest_project_id
-  # Provide the full path exactly as shown under "Subscription name" in Google Cloud Console
-  subscriber_id: projects/home-assistant-86f18/subscriptions/home_assistant_sdm
+  sp_dc: !secret sp_dc
+  sp_key: !secret sp_key
 
 google_assistant:
   project_id: home-assistant-86f18
@@ -205,51 +181,14 @@ switch:
           data:
             command: find_remote
         turn_off:
-      austin_air_filter_off:
-        unique_id: 4903b2aa-cd8a-48aa-8f1a-9c2535f85897
-        friendly_name: Austin Air Filter Off
-        value_template: "{{ is_state('switch.ewelink_sa_003_zigbee_c19dea22_on_off', 'off') }}"
-        turn_on:
-          service: switch.turn_off
-          target:
-            entity_id: switch.ewelink_sa_003_zigbee_c19dea22_on_off
-        turn_off:
-          service: switch.turn_on
-          target:
-            entity_id: switch.ewelink_sa_003_zigbee_c19dea22_on_off
-      master_air_filter_off:
-        unique_id: 676ea73b-ba7b-4335-987d-b2d13aa80d89
-        friendly_name: Master Air Filter Off
-        value_template: "{{ is_state('switch.ewelink_sa_003_zigbee_c520e922_on_off', 'off') }}"
-        turn_on:
-          service: switch.turn_off
-          target:
-            entity_id: switch.ewelink_sa_003_zigbee_c520e922_on_off
-        turn_off:
-          service: switch.turn_on
-          target:
-            entity_id: switch.ewelink_sa_003_zigbee_c520e922_on_off
-      space_heater_off:
-        unique_id: 2843b4d0-4182-489f-bba1-f7134276ab18
-        friendly_name: Space Heater Off
-        value_template: "{{ is_state('switch.office_space_heater_on_off', 'off') }}"
-        turn_on:
-          service: switch.turn_off
-          target:
-            entity_id: switch.office_space_heater_on_off
-        turn_off:
-          service: switch.turn_on
-          target:
-            entity_id: switch.office_space_heater_on_off
+        
 input_boolean:
   baby_sitter_mode:
     name: Babysitter Mode
     icon: mdi:baby
-timer:
-  basement_lights_out_timer:
-    name: Basement Lights Out Timer
-  garage_light_out_timer:
-    name: Garage Light Out Timer
+  no_school_tomorrow_mode:
+    name: No School Tomorrow Mode
+    icon: mdi:cancel
 group:
   presence_home:
     name: Presence Home
@@ -261,13 +200,17 @@ notify:
   - name: all_phones
     platform: group
     services:
-      - service: mobile_app_brady_pixel_3
-      - service: mobile_app_pixel_3
+      - service: mobile_app_bradys_iphone
+      - service: mobile_app_katie_pixel_4a
   - name: katie_phone
     platform: group
     services:
-      - service: mobile_app_pixel_3
+      - service: mobile_app_katie_pixel_4a
 
 automation: !include automations.yaml
 script: !include scripts.yaml
 scene: !include scenes.yaml
+
+#spotify:
+#  client_id: !secret spotify_client_id
+#  client_secret: !secret spotify_client_secret

@@ -1,30 +1,30 @@
 set_thermostats_home:
-  alias: Set Thermostats Home
+  alias: Thermostats / All Home
   sequence:
-  - device_id: 63d3bbd0a41e453a8732a7119093e631
-    domain: climate
-    entity_id: climate.main_thermostat
-    type: set_preset_mode
-    preset_mode: Home
-  - device_id: 112c271f3e3cbc53f7fe37108abe7be3
-    domain: climate
-    entity_id: climate.basement_thermostat
-    type: set_preset_mode
-    preset_mode: Home
+  - device_id: 58534ff267e607630e2cd888fba3175e
+    domain: select
+    entity_id: cd059104230284b95d9b93c4f37c23d9
+    type: select_option
+    option: home
+  - device_id: 852e37b9f21f018aff200d7c20154842
+    domain: select
+    entity_id: ac0ad92e47201489e0e74236132beb98
+    type: select_option
+    option: home
   mode: single
 set_thermostats_away:
-  alias: Set Thermostats Away
+  alias: Thermostats / All Away
   sequence:
-  - device_id: 63d3bbd0a41e453a8732a7119093e631
-    domain: climate
-    entity_id: climate.main_thermostat
-    type: set_preset_mode
-    preset_mode: Away
-  - device_id: 112c271f3e3cbc53f7fe37108abe7be3
-    domain: climate
-    entity_id: climate.basement_thermostat
-    type: set_preset_mode
-    preset_mode: Away
+  - device_id: 58534ff267e607630e2cd888fba3175e
+    domain: select
+    entity_id: cd059104230284b95d9b93c4f37c23d9
+    type: select_option
+    option: away
+  - device_id: 852e37b9f21f018aff200d7c20154842
+    domain: select
+    entity_id: ac0ad92e47201489e0e74236132beb98
+    type: select_option
+    option: away
   mode: single
 snapshot_backup:
   alias: Snapshot Backup
@@ -35,7 +35,7 @@ snapshot_backup:
       input: trigger
   mode: single
 reset_media_volume:
-  alias: Set Media Volume Normal
+  alias: Speakers / Volume Normal
   sequence:
   - service: media_player.volume_set
     data:
@@ -55,11 +55,21 @@ reset_media_volume:
       - media_player.office
       - media_player.basement_speaker
       - media_player.austin_s_room
-      - media_player.kayla_s_room
       - media_player.master_bedroom
+  - delay:
+      hours: 0
+      minutes: 0
+      seconds: 5
+      milliseconds: 0
+  - service: media_player.volume_set
+    data:
+      volume_level: 0.6
+    target:
+      entity_id:
+      - media_player.kayla_s_room
   mode: single
 play_spotify:
-  alias: '[Test] Play Spotify on Latest Player'
+  alias: X Play Spotify on Latest Player
   sequence:
   - service: media_player.play_media
     target:
@@ -69,7 +79,7 @@ play_spotify:
       media_content_type: playlist
   mode: single
 broadcast:
-  alias: '[Test] Google Assistant Broadcast'
+  alias: X Google Assistant Broadcast
   sequence:
   - service: rest_command.assistant_broadcast
     data:
@@ -80,18 +90,18 @@ broadcast:
         '
   mode: single
 set_thermostats_sleep:
-  alias: Set Thermostats Sleep
+  alias: Thermostats / All Sleep
   sequence:
-  - device_id: 63d3bbd0a41e453a8732a7119093e631
-    domain: climate
-    entity_id: climate.main_thermostat
-    type: set_preset_mode
-    preset_mode: Sleep
-  - device_id: 112c271f3e3cbc53f7fe37108abe7be3
-    domain: climate
-    entity_id: climate.basement_thermostat
-    type: set_preset_mode
-    preset_mode: Sleep
+  - device_id: 58534ff267e607630e2cd888fba3175e
+    domain: select
+    entity_id: cd059104230284b95d9b93c4f37c23d9
+    type: select_option
+    option: sleep
+  - device_id: 852e37b9f21f018aff200d7c20154842
+    domain: select
+    entity_id: ac0ad92e47201489e0e74236132beb98
+    type: select_option
+    option: sleep
   mode: single
 play_spotify_in_office:
   sequence:
@@ -99,23 +109,17 @@ play_spotify_in_office:
     data:
       uri: spotify:playlist:1Ci88PYWYA5dDC173KnaF4
       start_volume: 50
-      entity_id: media_player.kids_and_master
+      entity_id: media_player.hub
   mode: single
-  alias: '[Test] Play Christi Knockels on Spotify in Kids Room'
-demo_google_assistant_sync_devices:
-  alias: Sync Google Assistant Devices
-  sequence:
-  - service: rest_command.assistant_relay
-    data:
-      command: sync my devices
-  mode: single
+  alias: X Play Christi Knockels on Spotify in Kids Room
 test:
-  alias: '[Test] Test'
+  alias: X Test
   description: ''
   sequence:
   - service: script.turn_on
     target:
       entity_id: script.reset_media_volume
+    data: {}
   - service: media_player.play_media
     target:
       entity_id: media_player.hub
@@ -130,8 +134,8 @@ test:
   - service: tts.google_say
     data:
       entity_id: media_player.hub
-      message: "{{ [\"Welcome home!\", \"Hey there!\", \"I missed you.\", \"Welcome\
-        \ back home.\"] | random }} \n"
+      message: "{{ [\"Welcome home!\", \"Hey there!\", \"I missed you.\", \"Welcome
+        back home.\"] | random }} \n"
   - delay:
       hours: 0
       minutes: 0
@@ -158,7 +162,7 @@ tts_test:
           seconds: 7
           milliseconds: 0
   mode: single
-  alias: '[Test]  TTS'
+  alias: X TTS
 vacuum_room:
   description: Vacuum Room
   fields:
@@ -180,34 +184,36 @@ vacuum_room:
         regions: '{{ regions }}'
         user_pmapv_id: 210505T150237
   mode: single
-  alias: Vacuum Room
+  alias: Vacuum / Room
 vacuum_kitchen:
-  alias: Vacuum Kitchen
+  alias: Vacuum / Kitchen
   sequence:
-  - service: script.vacuum_room
+  - service: ifttt.trigger
     data:
-      regions:
-      - region_id: '27'
-        type: rid
+      event: vacuum_kitchen
   mode: single
 vacuum_office:
-  alias: Vacuum Office
+  alias: X Vacuum Office (Native)
   sequence:
   - service: script.vacuum_room
     data:
+      pmap_id: ohG_V5ffRYaH_RnJesFkqw
+      user_pmapv_id: 220311T030620
       regions:
       - region_id: '25'
         type: rid
   mode: single
 back_home_greeting:
-  alias: Back Home Greeting
+  alias: Speakers / Back Home Greeting
   sequence:
   - service: script.turn_on
     target:
       entity_id: script.reset_media_volume
+    data: {}
   - service: media_player.turn_on
     target:
       entity_id: media_player.all_speakers
+    data: {}
   - delay:
       hours: 0
       minutes: 0
@@ -217,16 +223,16 @@ back_home_greeting:
     data:
       entity_id: media_player.all_speakers
       message: '{{ ["Disarming the alarm", "The alarm has been disarmed", "Welcome
-        home!", "Hey there!", "I missed you.", "Welcome back home."] | random }} It''s
-        {%- if now().hour >= 13 -%} {{ "" }} {{ now().hour - 12 }}{% else %}{{ now().hour
-        }}{% endif %} {%- if now().minute < 10 -%}{{ "o" }}{% endif %} {{ now().minute
-        }}.
+        home!", "Hey there!", "I missed you.", "Welcome back home."] | random }} The
+        time is {%- if now().hour >= 13 -%}{{ now().hour - 12 }}{% else %}{{ now().hour
+        }}{% endif %} {%- if now().minute < 10 -%}{{ "o" }}{% endif %} {%- if now().minute
+        == 0 -%}{{ "clock" }}{% else %} {{ now().minute }}{% endif %}
 
         '
   description: ''
   mode: single
 test_play_sound_file:
-  alias: '[Test] Play Sound File'
+  alias: X Play Sound File
   sequence:
   - service: media_player.play_media
     data:
@@ -238,7 +244,7 @@ test_play_sound_file:
       entity_id: media_player.all_speakers
   mode: single
 media_soft_volume:
-  alias: Set Media Volume Soft
+  alias: Speakers / Volume Soft
   sequence:
   - service: media_player.volume_set
     data:
@@ -252,12 +258,81 @@ media_soft_volume:
       milliseconds: 0
   - service: media_player.volume_set
     data:
-      volume_level: 0.4
+      volume_level: 0.3
     target:
       entity_id:
       - media_player.office
       - media_player.basement_speaker
+      - media_player.master_bedroom
+  - delay:
+      hours: 0
+      minutes: 0
+      seconds: 5
+      milliseconds: 0
+  - service: media_player.volume_set
+    data:
+      volume_level: 0.4
+    target:
+      entity_id:
+      - media_player.kayla_s_room
       - media_player.austin_s_room
+  mode: single
+vacuum_office_2:
+  alias: Vacuum / Office
+  sequence:
+  - service: ifttt.trigger
+    data:
+      event: vacuum_office
+  mode: single
+media_player_stop:
+  alias: Speakers / Stop Media
+  sequence:
+  - service: media_player.media_stop
+    data: {}
+    target:
+      entity_id:
+      - media_player.austin_s_room
+      - media_player.basement_speaker
+      - media_player.hub
       - media_player.kayla_s_room
       - media_player.master_bedroom
+      - media_player.office
+  mode: single
+test_google_assistant_broadcast_to_single_device:
+  alias: X Google Assistant Broadcast to Single Device
+  sequence:
+  - service: rest_command.assistant_relay
+    data:
+      command: broadcast to Office It is time to come upstairs for breakfast
+  mode: single
+play_spotify_2:
+  alias: X Play Spotify Playlist via Google Assistant
+  sequence:
+  - service: rest_command.assistant_relay
+    data:
+      command: listen to Morning playlist on Kayla and Master
+  mode: single
+open_both_garages:
+  alias: Garage Doors / Open Both
+  sequence:
+  - device_id: 8fbd585d251b8cd8cff6397ab4f27f10
+    domain: cover
+    entity_id: 50f4f110ae43823caac3d5d6958d5d4a
+    type: open
+  - device_id: a6a884415a7b386409dda9d521d116dc
+    domain: cover
+    entity_id: 30f43341532dc968dd4cef99689d6ddd
+    type: open
+  mode: single
+close_both_garage_doors:
+  alias: Garage Doors / Close Both
+  sequence:
+  - device_id: 8fbd585d251b8cd8cff6397ab4f27f10
+    domain: cover
+    entity_id: 50f4f110ae43823caac3d5d6958d5d4a
+    type: close
+  - device_id: a6a884415a7b386409dda9d521d116dc
+    domain: cover
+    entity_id: 30f43341532dc968dd4cef99689d6ddd
+    type: close
   mode: single
